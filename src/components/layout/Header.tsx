@@ -34,14 +34,22 @@ export function Header() {
           >
             关于我们
           </Link>
+          <Link
+            href="/pricing"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            价格
+          </Link>
         </nav>
 
         {/* 操作按钮 */}
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" className="hidden sm:flex">
-            登录
+          <Button asChild variant="outline" size="sm" className="hidden sm:flex">
+            <Link href="/tasks">装完能做什么</Link>
           </Button>
-          <Button size="sm">开始使用</Button>
+          <Button asChild size="sm">
+            <Link href="/guide/local">开始安装</Link>
+          </Button>
         </div>
       </div>
     </header>

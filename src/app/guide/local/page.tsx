@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Terminal, Download, ArrowRight, ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
+import { CheckCircle, Terminal, Download, ArrowRight, ChevronDown, ChevronUp, HelpCircle, ClipboardCheck } from "lucide-react";
 import { EnvironmentCheck } from "@/components/EnvironmentCheck";
 import { StepDetailButton } from "@/components/StepDetail";
 
@@ -243,11 +244,15 @@ const stepDetails: Record<string, { title: string; content: ReactNode }> = {
 export default function LocalInstallPage() {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const [installMode, setInstallMode] = useState<"auto" | "manual">("auto");
+  const [copied, setCopied] = useState<"mac" | "win" | null>(null);
+  const [showAutoCommand, setShowAutoCommand] = useState(false);
   const params =
     typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
   const selectedSystem = params?.get("system") ?? null;
   const selectedLevel = params?.get("level") ?? null;
   const selectedPriority = params?.get("priority") ?? null;
+  const paidAuto = params?.get("paid_auto") === "1";
   const systemLabel = selectedSystem === "windows" ? "Windows" : selectedSystem === "macos" ? "macOS" : null;
   const levelLabel =
     selectedLevel === "beginner"
@@ -267,6 +272,20 @@ export default function LocalInstallPage() {
           : selectedPriority === "online"
             ? "长期在线运行"
             : null;
+  const macCommand = "chmod +x installer/openclaw-installer.sh && ./installer/openclaw-installer.sh doctor";
+  const winCommand = "powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 doctor";
+  const preferredPlatform: "mac" | "win" = selectedSystem === "windows" ? "win" : "mac";
+  const preferredCommand = preferredPlatform === "win" ? winCommand : macCommand;
+
+  const copyCommand = async (platform: "mac" | "win", content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(platform);
+      setTimeout(() => setCopied(null), 1200);
+    } catch {
+      setCopied(null);
+    }
+  };
 
   // 切换步骤完成状态
   const toggleComplete = (step: number) => {
@@ -305,10 +324,124 @@ export default function LocalInstallPage() {
           </Card>
         )}
 
-        {/* 进度条 */}
+        <Card className="border-border/50 mb-8">
+          <CardContent className="p-4">
+            <p className="text-sm font-medium mb-3">请选择安装方式</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={installMode === "auto" ? "default" : "outline"}
+                onClick={() => setInstallMode("auto")}
+              >
+                自动安装（推荐）
+              </Button>
+              <Button
+                variant={installMode === "manual" ? "default" : "outline"}
+                onClick={() => setInstallMode("manual")}
+              >
+                手动安装（免费）
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 自动安装入口 */}
+        {installMode === "auto" && (
+        <Card className="border-primary/30 bg-primary/5 mb-8">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-3">自动安装（简单三步）</h2>
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-lg font-semibold mb-1">49.9 全自动安装</h2>
+                <p className="text-sm text-muted-foreground">
+                  几乎不用研究命令。按步骤做完就行，49.9 已包含安装失败协助。
+                </p>
+              </div>
+              <span className="text-sm font-semibold text-primary">¥49.9</span>
+            </div>
+
+            {!paidAuto ? (
+              <div className="space-y-4">
+                <div className="rounded-lg border border-primary/20 bg-background/60 p-4">
+                  <p className="text-sm mb-2 font-medium">你只需要做 3 件事：</p>
+                  <p className="text-sm text-muted-foreground">1. 下载对应系统的安装脚本</p>
+                  <p className="text-sm text-muted-foreground">2. 复制一条命令到终端运行</p>
+                  <p className="text-sm text-muted-foreground">3. 等待自动检测和安装完成</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild>
+                    <Link href="/checkout/auto">立即开通自动安装（¥49.9）</Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href="/pricing">查看价格说明</Link>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  说明：自动安装没成功会协助你处理，不需要再额外升级。
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <Button asChild variant="outline">
+                    <a href="/downloads/openclaw-installer.sh" download>
+                      下载 macOS 脚本
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <a href="/downloads/openclaw-installer.ps1" download>
+                      下载 Windows 脚本
+                    </a>
+                  </Button>
+                </div>
+
+                <Button className="w-full sm:w-auto" onClick={() => setShowAutoCommand((v) => !v)}>
+                  {showAutoCommand ? "收起自动安装命令" : "开始自动安装"}
+                </Button>
+
+                {showAutoCommand && (
+                  <div className="mt-4 bg-secondary/40 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-2">
+                      {preferredPlatform === "win" ? "Windows" : "macOS"} 运行命令：
+                    </p>
+                    <code className="text-xs break-all">{preferredCommand}</code>
+                    <div className="mt-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => copyCommand(preferredPlatform, preferredCommand)}
+                      >
+                        <ClipboardCheck className="w-4 h-4 mr-1" />
+                        {copied === preferredPlatform ? "已复制" : "复制命令"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button asChild variant="outline">
+                    <a
+                      href="https://github.com/15564412316-blip/openclaw-beginner-site/tree/main/installer"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      查看脚本说明
+                    </a>
+                  </Button>
+                  <Button asChild variant="ghost">
+                    <Link href="/guide/local">隐藏详细步骤</Link>
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+        )}
+
+        {installMode === "manual" && (
+        <>
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">安装进度</span>
+            <span className="text-sm font-medium">手动安装进度</span>
             <span className="text-sm text-muted-foreground">{progress}%</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -319,16 +452,27 @@ export default function LocalInstallPage() {
           </div>
         </div>
 
-        {/* 环境检测 */}
+        <div className="mb-3">
+          <h2 className="text-xl font-semibold mb-3">第一步：先做环境检测</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            检测通过后再开始手动安装，会省很多时间。
+          </p>
+        </div>
         <div className="mb-8">
           <EnvironmentCheck />
         </div>
 
-        {/* 安装步骤 */}
+        <div className="mb-3">
+          <h2 className="text-xl font-semibold mb-3">第二步：按步骤安装</h2>
+          <p className="text-sm text-muted-foreground mb-2">
+            不用急，一步一步来，完成一条再做下一条。
+          </p>
+        </div>
         <div className="space-y-4 mb-8">
           {installSteps.map((step) => {
             const isCompleted = completedSteps.includes(step.step);
             const isExpanded = expandedStep === step.step;
+            const canComplete = step.step === 1 || completedSteps.includes(step.step - 1);
 
             return (
               <Card
@@ -406,8 +550,9 @@ export default function LocalInstallPage() {
                           variant={isCompleted ? "outline" : "default"}
                           size="sm"
                           onClick={() => toggleComplete(step.step)}
+                          disabled={!isCompleted && !canComplete}
                         >
-                          {isCompleted ? "取消完成" : "标记为完成"}
+                          {isCompleted ? "取消完成" : canComplete ? "标记为完成" : "请先完成上一步"}
                         </Button>
 
                         <StepDetailButton
@@ -423,9 +568,11 @@ export default function LocalInstallPage() {
             );
           })}
         </div>
+        </>
+        )}
 
         {/* 完成提示 */}
-        {progress === 100 && (
+        {installMode === "manual" && progress === 100 && (
           <Card className="border-green-500/50 bg-green-500/5 mb-8">
             <CardContent className="p-6 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 mb-4">
@@ -444,6 +591,24 @@ export default function LocalInstallPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* 安装后步骤 */}
+        <Card className="border-border/50 mb-8">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-3">安装完成后，下一步做什么？</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Button asChild>
+                <Link href="/tasks">看看它能做什么（使用场景）</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/api-key">去配置模型密钥（API）</Link>
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground mt-4">
+              提示：如果你主要用国内模型，先点“去配置模型密钥（API）”会更顺畅。
+            </p>
+          </CardContent>
+        </Card>
 
         {/* 常见问题 */}
         <Card className="border-border/50">

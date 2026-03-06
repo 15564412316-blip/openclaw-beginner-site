@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ArrowRight, Laptop } from "lucide-react";
+import { CheckCircle, ArrowRight, Laptop, Cloud } from "lucide-react";
 
 type QuestionOption = {
   id: string;
@@ -87,13 +87,14 @@ export default function GuidePage() {
     });
     return `/guide/local?${params.toString()}`;
   }, [answers]);
+  const isCloudPreference = answers.priority === "online";
 
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">选择你的使用情况</h1>
-          <p className="text-muted-foreground text-lg">回答 3 个问题后，直接进入本地部署教程</p>
+          <p className="text-muted-foreground text-lg">回答 3 个问题后，为你推荐最合适的部署路径</p>
         </div>
 
         <div className="flex items-center justify-center gap-2 mb-12">
@@ -153,7 +154,7 @@ export default function GuidePage() {
 
             <div className="flex justify-center pt-4">
               <Button size="lg" className="gap-2 px-12 h-12" disabled={!allAnswered} onClick={() => setShowResult(true)}>
-                进入本地部署
+                查看推荐路径
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
@@ -161,7 +162,7 @@ export default function GuidePage() {
         ) : (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">已为你准备本地部署路径</h2>
+              <h2 className="text-2xl font-bold mb-2">已为你准备推荐路径</h2>
               <p className="text-muted-foreground">你的选择已带入下一个页面，不需要重新填写。</p>
             </div>
 
@@ -169,13 +170,21 @@ export default function GuidePage() {
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Laptop className="w-6 h-6 text-primary" />
+                    {isCloudPreference ? (
+                      <Cloud className="w-6 h-6 text-primary" />
+                    ) : (
+                      <Laptop className="w-6 h-6 text-primary" />
+                    )}
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">本地部署（唯一推荐）</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      {isCloudPreference ? "云端部署（敬请期待）" : "本地部署（推荐）"}
+                    </h3>
                     <p className="text-muted-foreground mb-4">
-                      你当前阶段最适合先在本地跑通 OpenClaw，后续再考虑云端方案。
+                      {isCloudPreference
+                        ? "你选择了长期在线运行。云端部署能力正在完善中，当前可先使用本地部署。"
+                        : "你当前阶段最适合先在本地跑通 OpenClaw，后续再考虑云端方案。"}
                     </p>
 
                     <p className="text-sm text-muted-foreground mb-4">
@@ -185,12 +194,29 @@ export default function GuidePage() {
                       </span>
                     </p>
 
-                    <Button asChild className="gap-2">
-                      <a href={localGuideLink}>
-                        打开本地部署教程
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
-                    </Button>
+                    {isCloudPreference ? (
+                      <div className="flex flex-wrap gap-2">
+                        <Button asChild className="gap-2">
+                          <a href="/guide/cloud">
+                            查看云端进展
+                            <ArrowRight className="w-4 h-4" />
+                          </a>
+                        </Button>
+                        <Button asChild variant="outline" className="gap-2">
+                          <a href={localGuideLink}>
+                            先走本地部署
+                            <ArrowRight className="w-4 h-4" />
+                          </a>
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button asChild className="gap-2">
+                        <a href={localGuideLink}>
+                          打开本地部署教程
+                          <ArrowRight className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

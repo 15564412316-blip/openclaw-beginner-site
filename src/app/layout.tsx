@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AIHelperWidget } from "@/components/AIHelperWidget";
 
 export const metadata: Metadata = {
   title: "OpenClaw 新手安全上手站",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <AIHelperWidget />
       </body>
     </html>
   );
