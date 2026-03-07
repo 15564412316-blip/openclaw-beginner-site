@@ -608,7 +608,8 @@ MVP 成功的判断标准：
 ### 19.10 已落地执行文件（2026-03-07）
 1. 数据库 SQL：`docs/supabase-schema-v1.sql`
 2. 上线待办清单：`docs/launch-checklist-v1.md`
-3. 当前支付形态：商户收款码 + 人工确认（Demo）
+3. 当前支付形态：托管收银台接口（mock）+ 自动回调确认（人工兜底）
+4. 支付回调迁移 SQL：`docs/supabase-migration-payment-v1.sql`
 
 ---
 

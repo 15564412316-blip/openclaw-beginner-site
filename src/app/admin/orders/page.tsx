@@ -24,9 +24,9 @@ type OrderItem = {
 export default function AdminOrdersPage() {
   const [token, setToken] = useState("");
   const [reviewedBy, setReviewedBy] = useState("admin");
-  const [viewStatus, setViewStatus] = useState<"pending_review" | "paid_confirmed" | "rejected">(
-    "pending_review"
-  );
+  const [viewStatus, setViewStatus] = useState<
+    "pending_payment" | "pending_review" | "paid_confirmed" | "rejected"
+  >("pending_payment");
   const [keyword, setKeyword] = useState("");
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -107,7 +107,7 @@ export default function AdminOrdersPage() {
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">订单审核后台（MVP）</h1>
         <p className="text-sm text-muted-foreground mb-6">
-          仅用于人工确认收款。请勿对外公开本页面口令。
+          自动回调为主，人工审核为兜底。请勿对外公开本页面口令。
         </p>
 
         <Card className="border-border/50 mb-6">
@@ -145,6 +145,13 @@ export default function AdminOrdersPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
+              <Button
+                variant={viewStatus === "pending_payment" ? "default" : "outline"}
+                onClick={() => setViewStatus("pending_payment")}
+                disabled={loading}
+              >
+                待支付回调
+              </Button>
               <Button
                 variant={viewStatus === "pending_review" ? "default" : "outline"}
                 onClick={() => setViewStatus("pending_review")}

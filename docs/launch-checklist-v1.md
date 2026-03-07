@@ -32,6 +32,7 @@
 1. 创建 Supabase 项目（区域建议新加坡）
 2. 在 SQL Editor 执行：
    - [docs/supabase-schema-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-schema-v1.sql)
+   - 若为旧项目，再执行 [docs/supabase-migration-payment-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-payment-v1.sql)
 3. 创建后台管理员账号（Supabase Auth，可后补）
 4. 配置备份：
    - 每日自动备份（至少保留 7 天）
@@ -53,7 +54,7 @@
 1. 选型聚合支付（如虎皮椒/PayJS/易支付等，按合规评估）
 2. 接入自动回调与签名校验
 3. 打通订单状态机：
-   - `pending_review` -> `paid_confirmed` -> `refunded/rejected`
+   - `pending_payment` -> `paid_confirmed` -> `refunded/rejected`
 
 ## 6. 运营与风控
 1. 免费模式仅提供教程，不开放人工直连

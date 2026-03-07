@@ -17,7 +17,7 @@ begin
     create type order_channel as enum ('wechat', 'alipay');
   end if;
   if not exists (select 1 from pg_type where typname = 'order_status') then
-    create type order_status as enum ('pending_review', 'paid_confirmed', 'rejected', 'refunded');
+    create type order_status as enum ('pending_payment', 'pending_review', 'paid_confirmed', 'rejected', 'refunded');
   end if;
   if not exists (select 1 from pg_type where typname = 'install_mode') then
     create type install_mode as enum ('manual', 'auto', 'vip_done_for_you');

@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       .from("orders")
       .update(updatePayload)
       .eq("order_no", orderNo)
-      .eq("status", "pending_review")
+      .in("status", ["pending_review", "pending_payment"])
       .select("id,order_no,status");
 
     if (error) {

@@ -42,4 +42,7 @@ npm run build
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `ADMIN_REVIEW_TOKEN`
+   - `PAYMENT_PROVIDER` (`mock` for now)
+   - `PAYMENT_WEBHOOK_SECRET` (for webhook signature check)
+   - `NEXT_PUBLIC_SITE_URL` (e.g. `http://localhost:3000`)
 2. Open `/admin/orders` to review pending manual-payment orders.

@@ -10,10 +10,10 @@ export async function GET(req: Request) {
     }
 
     const url = new URL(req.url);
-    const status = (url.searchParams.get("status") ?? "pending_review").trim();
+    const status = (url.searchParams.get("status") ?? "pending_payment").trim();
     const q = (url.searchParams.get("q") ?? "").trim();
 
-    const allowed = ["pending_review", "paid_confirmed", "rejected"];
+    const allowed = ["pending_payment", "pending_review", "paid_confirmed", "rejected"];
     if (!allowed.includes(status)) {
       return NextResponse.json(
         { ok: false, message: "状态参数无效。" },
