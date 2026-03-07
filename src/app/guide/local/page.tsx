@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Terminal, Download, ArrowRight, ChevronDown, ChevronUp, HelpCircle, ClipboardCheck } from "lucide-react";
+import { CheckCircle, Terminal, Download, ArrowRight, ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
 import { EnvironmentCheck } from "@/components/EnvironmentCheck";
 import { StepDetailButton } from "@/components/StepDetail";
 import { OneTimeDownloadPanel } from "@/components/checkout/OneTimeDownloadPanel";
@@ -246,8 +246,6 @@ export default function LocalInstallPage() {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [installMode, setInstallMode] = useState<"auto" | "manual">("auto");
-  const [copied, setCopied] = useState<"mac" | "win" | null>(null);
-  const [showAutoCommand, setShowAutoCommand] = useState(false);
   const params =
     typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
   const selectedSystem = params?.get("system") ?? null;
@@ -273,22 +271,6 @@ export default function LocalInstallPage() {
           : selectedPriority === "online"
             ? "长期在线运行"
             : null;
-  const macCommand =
-    "chmod +x installer/openclaw-installer.sh && ./installer/openclaw-installer.sh doctor && ./installer/openclaw-installer.sh install --dir \"$HOME/openclaw\" && ./installer/openclaw-installer.sh verify --dir \"$HOME/openclaw\"";
-  const winCommand =
-    "powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 doctor; powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 install -Dir \"$HOME\\openclaw\"; powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 verify -Dir \"$HOME\\openclaw\"";
-  const preferredPlatform: "mac" | "win" = selectedSystem === "windows" ? "win" : "mac";
-  const preferredCommand = preferredPlatform === "win" ? winCommand : macCommand;
-
-  const copyCommand = async (platform: "mac" | "win", content: string) => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setCopied(platform);
-      setTimeout(() => setCopied(null), 1200);
-    } catch {
-      setCopied(null);
-    }
-  };
 
   // 切换步骤完成状态
   const toggleComplete = (step: number) => {
@@ -356,7 +338,7 @@ export default function LocalInstallPage() {
               <div>
                 <h2 className="text-lg font-semibold mb-1">99.9 全自动安装</h2>
                 <p className="text-sm text-muted-foreground">
-                  几乎不用研究命令。按步骤做完就行，99.9 已包含安装失败协助。
+                  几乎不用研究技术细节。按步骤做完就行，99.9 已包含安装失败协助。
                 </p>
               </div>
               <span className="text-sm font-semibold text-primary">¥99.9</span>
@@ -366,9 +348,9 @@ export default function LocalInstallPage() {
               <div className="space-y-4">
                 <div className="rounded-lg border border-primary/20 bg-background/60 p-4">
                   <p className="text-sm mb-2 font-medium">你只需要做 3 件事：</p>
-                  <p className="text-sm text-muted-foreground">1. 下载对应系统的安装脚本</p>
-                  <p className="text-sm text-muted-foreground">2. 复制一条命令到终端运行</p>
-                  <p className="text-sm text-muted-foreground">3. 等待自动检测和安装完成</p>
+                  <p className="text-sm text-muted-foreground">1. 支付后下载一键安装器</p>
+                  <p className="text-sm text-muted-foreground">2. 双击运行，按提示点击下一步</p>
+                  <p className="text-sm text-muted-foreground">3. 安装完成后可勾选“立即打开”</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button asChild>
@@ -379,7 +361,7 @@ export default function LocalInstallPage() {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  说明：自动安装没成功会协助你处理，不需要再额外升级。
+                  说明：全流程尽量可视化，不要求你手动输入代码。安装失败会协助你处理。
                 </p>
               </div>
             ) : (
@@ -388,41 +370,34 @@ export default function LocalInstallPage() {
                   <OneTimeDownloadPanel />
                 </div>
 
-                <Button className="w-full sm:w-auto" onClick={() => setShowAutoCommand((v) => !v)}>
-                  {showAutoCommand ? "收起自动安装命令" : "开始自动安装"}
-                </Button>
-
-                {showAutoCommand && (
-                  <div className="mt-4 bg-secondary/40 rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {preferredPlatform === "win" ? "Windows" : "macOS"} 运行命令：
-                    </p>
-                    <code className="text-xs break-all">{preferredCommand}</code>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      这条命令会自动执行：环境检测 → 安装代码与依赖 → 验证安装结果。完成后再去配置 API Key 即可。
-                    </p>
-                    <div className="mt-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyCommand(preferredPlatform, preferredCommand)}
-                      >
-                        <ClipboardCheck className="w-4 h-4 mr-1" />
-                        {copied === preferredPlatform ? "已复制" : "复制命令"}
-                      </Button>
-                    </div>
+                <div className="rounded-lg border border-border/50 bg-background/70 p-4 space-y-2">
+                  <p className="text-sm font-medium">推荐方式：可视化一键安装器</p>
+                  <p className="text-sm text-muted-foreground">下载后直接双击运行，不需要手动输入代码。</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Button asChild variant="outline">
+                      <a href="/downloads/openclaw-oneclick-macos.command" download>
+                        下载 macOS 一键安装器
+                      </a>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <a href="/downloads/openclaw-oneclick-windows.bat" download>
+                        下载 Windows 一键安装器
+                      </a>
+                    </Button>
                   </div>
-                )}
+                  <p className="text-xs text-muted-foreground">
+                    安装完成后你可以选择“立即打开”。若不立即打开，可下载后续指南随时查看。
+                  </p>
+                </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button asChild variant="outline">
-                    <a
-                      href="https://github.com/15564412316-blip/openclaw-beginner-site/tree/main/installer"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      查看脚本说明
+                    <a href="/downloads/openclaw-ops-guide.txt" download>
+                      下载后续使用指南（必备）
                     </a>
+                  </Button>
+                  <Button asChild variant="ghost">
+                    <Link href="/api-key">去配置 API Key</Link>
                   </Button>
                   <Button asChild variant="ghost">
                     <Link href="/guide/local">隐藏详细步骤</Link>

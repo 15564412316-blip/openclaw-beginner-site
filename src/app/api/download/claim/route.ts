@@ -83,8 +83,8 @@ export async function POST(req: Request) {
 
     const fileUrl =
       platform === "mac"
-        ? "/downloads/openclaw-installer.sh"
-        : "/downloads/openclaw-installer.ps1";
+        ? "/downloads/openclaw-oneclick-macos.command"
+        : "/downloads/openclaw-oneclick-windows.bat";
 
     const res = NextResponse.json(
       { ok: true, fileUrl, orderNo, platform },

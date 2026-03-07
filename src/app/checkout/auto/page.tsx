@@ -17,7 +17,7 @@ export default function CheckoutAutoPage() {
           title="托管收银台支付"
           description="先创建订单，再跳转支付页完成付款。支付回调成功后会自动开通安装权限。"
           successPath="/guide/local?paid_auto=1"
-          extraNote="下载限制：支付成功后直接下载脚本，每个订单仅可下载一次。若需再次下载，请重新购买或联系人工。"
+          extraNote="下载限制：支付成功后直接下载安装器，每个订单仅可下载一次。若需再次下载，请重新购买或联系人工。"
         />
 
         <div className="mt-6 flex flex-wrap justify-center gap-3">

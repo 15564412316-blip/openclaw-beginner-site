@@ -50,10 +50,10 @@ export function OneTimeDownloadPanel() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Button variant="outline" disabled={loading} onClick={() => claim("mac")}>
-          下载 macOS 脚本（一次）
+          下载 macOS 一键安装器（一次）
         </Button>
         <Button variant="outline" disabled={loading} onClick={() => claim("win")}>
-          下载 Windows 脚本（一次）
+          下载 Windows 一键安装器（一次）
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
