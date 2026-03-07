@@ -90,8 +90,12 @@ export function HostedPaymentPanel({
       setStatus(nextStatus);
       if (nextStatus === "paid_confirmed") {
         setMessage("支付成功，正在跳转...");
-        const connector = successPath.includes("?") ? "&" : "?";
-        window.location.href = `${successPath}${connector}orderNo=${encodeURIComponent(orderNo)}`;
+        await fetch("/api/payment/grant-download", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderNo }),
+        });
+        window.location.href = successPath;
       } else {
         setMessage("尚未支付成功，请完成支付后再刷新状态。");
       }

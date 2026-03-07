@@ -254,7 +254,6 @@ export default function LocalInstallPage() {
   const selectedLevel = params?.get("level") ?? null;
   const selectedPriority = params?.get("priority") ?? null;
   const paidAuto = params?.get("paid_auto") === "1";
-  const orderNo = params?.get("orderNo") ?? "";
   const systemLabel = selectedSystem === "windows" ? "Windows" : selectedSystem === "macos" ? "macOS" : null;
   const levelLabel =
     selectedLevel === "beginner"
@@ -386,7 +385,7 @@ export default function LocalInstallPage() {
             ) : (
               <>
                 <div className="mb-4">
-                  <OneTimeDownloadPanel defaultOrderNo={orderNo} />
+                  <OneTimeDownloadPanel />
                 </div>
 
                 <Button className="w-full sm:w-auto" onClick={() => setShowAutoCommand((v) => !v)}>

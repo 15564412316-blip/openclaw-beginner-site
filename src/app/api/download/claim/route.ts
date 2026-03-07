@@ -1,23 +1,30 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabaseAdmin";
+import { cookies } from "next/headers";
 
 type Payload = {
-  orderNo?: string;
   platform?: "mac" | "win" | string;
 };
 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Payload;
-    const orderNo = (body.orderNo ?? "").trim();
     const platform = (body.platform ?? "").trim();
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
     const userAgent = req.headers.get("user-agent") || null;
+    const cookieStore = await cookies();
+    const orderNo = cookieStore.get("oc_download_order_no")?.value?.trim() ?? "";
 
-    if (!orderNo || !platform) {
+    if (!platform) {
       return NextResponse.json(
-        { ok: false, message: "缺少订单号或平台参数。" },
+        { ok: false, message: "缺少平台参数。" },
         { status: 400 }
+      );
+    }
+    if (!orderNo) {
+      return NextResponse.json(
+        { ok: false, message: "下载权限不存在，请先在支付页完成支付并刷新状态。" },
+        { status: 403 }
       );
     }
     if (!["mac", "win"].includes(platform)) {
@@ -79,10 +86,18 @@ export async function POST(req: Request) {
         ? "/downloads/openclaw-installer.sh"
         : "/downloads/openclaw-installer.ps1";
 
-    return NextResponse.json(
+    const res = NextResponse.json(
       { ok: true, fileUrl, orderNo, platform },
       { status: 200 }
     );
+    res.cookies.set("oc_download_order_no", "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 0,
+    });
+    return res;
   } catch (error) {
     console.error("download claim failed:", error);
     const msg = String((error as { message?: string })?.message ?? "");
