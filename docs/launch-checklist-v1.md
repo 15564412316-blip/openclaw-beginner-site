@@ -35,6 +35,7 @@
    - 若为旧项目，再执行 [docs/supabase-migration-payment-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-payment-v1.sql)
    - 若已启用手机号登录，再执行 [docs/supabase-migration-auth-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-auth-v1.sql)
    - 若启用“付费仅下载一次”，再执行 [docs/supabase-migration-download-lock-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-download-lock-v1.sql)
+   - 若启用“手机号绑定默认邮箱”，再执行 [docs/supabase-migration-user-profile-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-user-profile-v1.sql)
 3. 创建后台管理员账号（Supabase Auth，可后补）
 4. 配置备份：
    - 每日自动备份（至少保留 7 天）

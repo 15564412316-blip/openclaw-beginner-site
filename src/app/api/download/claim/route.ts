@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
     if (!orderNo) {
       return NextResponse.json(
-        { ok: false, message: "下载权限不存在，请先在支付页完成支付并刷新状态。" },
+        { ok: false, message: "下载权限不存在，请先在支付页完成支付并刷新状态。", code: "NO_GRANT" },
         { status: 403 }
       );
     }
@@ -52,13 +52,13 @@ export async function POST(req: Request) {
     }
     if (order.plan !== "auto_49") {
       return NextResponse.json(
-        { ok: false, message: "仅自动安装订单可下载脚本。" },
+        { ok: false, message: "仅自动安装订单可下载脚本。", code: "PLAN_NOT_ALLOWED" },
         { status: 403 }
       );
     }
     if (order.status !== "paid_confirmed") {
       return NextResponse.json(
-        { ok: false, message: "订单未支付成功，暂不可下载。" },
+        { ok: false, message: "订单未支付成功，暂不可下载。", code: "UNPAID" },
         { status: 403 }
       );
     }

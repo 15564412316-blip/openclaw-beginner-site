@@ -52,7 +52,10 @@ npm run build
    - `docs/supabase-migration-auth-v1.sql`
    - `docs/supabase-migration-download-lock-v1.sql` (one-time paid download lock)
    - `docs/supabase-migration-payment-v1.sql` (payment status enum update)
+   - `docs/supabase-migration-user-profile-v1.sql` (bind default email to phone user)
    Then check login data in:
    - `app_users`
    - `auth_login_events`
    - `auth_sms_codes` (OTP temporary records)
+5. User self-service page: `/me` (orders, tickets, submit ticket).
+6. Admin ticket processing page: `/admin/tickets`.

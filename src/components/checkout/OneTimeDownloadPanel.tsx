@@ -18,6 +18,19 @@ export function OneTimeDownloadPanel() {
       });
       const data = await res.json();
       if (!res.ok || !data?.ok) {
+        const code = String(data?.code ?? "");
+        if (code === "ALREADY_USED") {
+          window.location.href = "/download/fail?reason=already_used";
+          return;
+        }
+        if (code === "NO_GRANT") {
+          window.location.href = "/download/fail?reason=no_grant";
+          return;
+        }
+        if (code === "UNPAID") {
+          window.location.href = "/download/fail?reason=unpaid";
+          return;
+        }
         setMessage(data?.message ?? "领取下载失败");
         return;
       }

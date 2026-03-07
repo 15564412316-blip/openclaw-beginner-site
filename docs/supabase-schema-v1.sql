@@ -111,6 +111,7 @@ create table if not exists public.ai_chat_usage_daily (
 create table if not exists public.app_users (
   id uuid primary key default gen_random_uuid(),
   phone text not null unique,
+  preferred_email text,
   status text not null default 'active',
   first_login_at timestamptz not null default now(),
   last_login_at timestamptz not null default now(),
@@ -163,6 +164,7 @@ create index if not exists idx_ai_chat_usage_daily_key on public.ai_chat_usage_d
 create unique index if not exists idx_ai_chat_usage_daily_unique_expr
 on public.ai_chat_usage_daily(usage_date, coalesce(email, ''), coalesce(client_id, ''));
 create index if not exists idx_app_users_phone on public.app_users(phone);
+create index if not exists idx_app_users_preferred_email on public.app_users(preferred_email);
 create index if not exists idx_app_users_last_login on public.app_users(last_login_at desc);
 create index if not exists idx_auth_login_events_phone on public.auth_login_events(phone, created_at desc);
 create index if not exists idx_auth_login_events_user_id on public.auth_login_events(user_id, created_at desc);

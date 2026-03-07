@@ -67,12 +67,20 @@ export function Footer() {
                   联系我们
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/legal/refund"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  退款说明
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* 相关链接 */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold">相关链接</h4>
+            <h4 className="text-sm font-semibold">相关与协议</h4>
             <ul className="space-y-2">
               <li>
                 <a
@@ -93,6 +101,30 @@ export function Footer() {
                 >
                   OpenClaw 官网
                 </a>
+              </li>
+              <li>
+                <Link
+                  href="/legal/terms"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  用户协议
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/privacy"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  隐私政策
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/service"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  服务边界
+                </Link>
               </li>
             </ul>
           </div>

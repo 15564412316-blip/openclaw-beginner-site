@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,6 +110,11 @@ export default function AdminOrdersPage() {
         <p className="text-sm text-muted-foreground mb-6">
           自动回调为主，人工审核为兜底。请勿对外公开本页面口令。
         </p>
+        <div className="mb-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/tickets">去工单处理后台</Link>
+          </Button>
+        </div>
 
         <Card className="border-border/50 mb-6">
           <CardContent className="p-6">

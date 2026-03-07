@@ -6,6 +6,7 @@ create extension if not exists "pgcrypto";
 create table if not exists public.app_users (
   id uuid primary key default gen_random_uuid(),
   phone text not null unique,
+  preferred_email text,
   status text not null default 'active',
   first_login_at timestamptz not null default now(),
   last_login_at timestamptz not null default now(),
@@ -36,6 +37,7 @@ create table if not exists public.auth_sms_codes (
 );
 
 create index if not exists idx_app_users_phone on public.app_users(phone);
+create index if not exists idx_app_users_preferred_email on public.app_users(preferred_email);
 create index if not exists idx_app_users_last_login on public.app_users(last_login_at desc);
 create index if not exists idx_auth_login_events_phone on public.auth_login_events(phone, created_at desc);
 create index if not exists idx_auth_login_events_user_id on public.auth_login_events(user_id, created_at desc);

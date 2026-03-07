@@ -612,6 +612,7 @@ MVP 成功的判断标准：
 4. 支付回调迁移 SQL：`docs/supabase-migration-payment-v1.sql`
 5. 登录落库迁移 SQL：`docs/supabase-migration-auth-v1.sql`
 6. 单次下载限制迁移 SQL：`docs/supabase-migration-download-lock-v1.sql`
+7. 用户资料绑定迁移 SQL：`docs/supabase-migration-user-profile-v1.sql`
 
 ---
 

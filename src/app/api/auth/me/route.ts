@@ -13,7 +13,7 @@ export async function GET() {
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("app_users")
-      .select("id,phone,status,first_login_at,last_login_at,login_count")
+      .select("id,phone,preferred_email,status,first_login_at,last_login_at,login_count")
       .eq("phone", phone)
       .limit(1)
       .maybeSingle();

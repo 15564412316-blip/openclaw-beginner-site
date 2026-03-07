@@ -31,6 +31,7 @@ export default function MePage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [preferredEmail, setPreferredEmail] = useState("");
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [orderNo, setOrderNo] = useState("");
@@ -46,6 +47,11 @@ export default function MePage() {
         const data = await res.json();
         setLoggedIn(Boolean(data?.loggedIn));
         setPhone(String(data?.phone ?? ""));
+        const pre = String(data?.profile?.preferred_email ?? "");
+        setPreferredEmail(pre);
+        if (pre) {
+          setEmail(pre);
+        }
       } catch {
         setLoggedIn(false);
       }
@@ -69,6 +75,35 @@ export default function MePage() {
       }
       setOrders(data.orders ?? []);
       setMessage("订单已刷新。");
+    } catch {
+      setMessage("网络异常，请稍后重试。");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const savePreferredEmail = async () => {
+    if (!email.trim()) {
+      setMessage("请先输入邮箱。");
+      return;
+    }
+    setLoading(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preferredEmail: email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.ok) {
+        setMessage(data?.message ?? "保存失败");
+        return;
+      }
+      const pre = String(data?.profile?.preferred_email ?? email.trim());
+      setPreferredEmail(pre);
+      setEmail(pre);
+      setMessage("默认邮箱已保存。");
     } catch {
       setMessage("网络异常，请稍后重试。");
     } finally {
@@ -169,6 +204,9 @@ export default function MePage() {
                 />
               </div>
               <div className="flex items-end gap-2">
+                <Button variant="outline" onClick={savePreferredEmail} disabled={loading}>
+                  设为默认
+                </Button>
                 <Button variant="outline" onClick={loadOrders} disabled={loading}>
                   查订单
                 </Button>
@@ -177,6 +215,9 @@ export default function MePage() {
                 </Button>
               </div>
             </div>
+            {preferredEmail ? (
+              <p className="text-xs text-muted-foreground mt-2">当前默认邮箱：{preferredEmail}</p>
+            ) : null}
             {message && <p className="text-sm mt-3">{message}</p>}
           </CardContent>
         </Card>
@@ -219,6 +260,13 @@ export default function MePage() {
                   <p>套餐：{o.plan} / 金额：¥{o.amount}</p>
                   <p>状态：{o.status}</p>
                   <p>创建时间：{new Date(o.created_at).toLocaleString()}</p>
+                  <div className="mt-2">
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/me/orders/${encodeURIComponent(o.order_no)}?email=${encodeURIComponent(email.trim())}`}>
+                        查看详情
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               ))}
               {orders.length === 0 && <p className="text-sm text-muted-foreground">暂无订单（先输入邮箱后点“查订单”）。</p>}
