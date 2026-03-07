@@ -14,19 +14,26 @@ type OrderItem = {
   amount: number;
   channel: "wechat" | "alipay";
   payer_note: string | null;
-  status: "pending_review";
+  status: "pending_review" | "paid_confirmed" | "rejected";
   created_at: string;
+  reviewed_by?: string | null;
+  reviewed_note?: string | null;
+  reviewed_at?: string | null;
 };
 
 export default function AdminOrdersPage() {
   const [token, setToken] = useState("");
   const [reviewedBy, setReviewedBy] = useState("admin");
+  const [viewStatus, setViewStatus] = useState<"pending_review" | "paid_confirmed" | "rejected">(
+    "pending_review"
+  );
+  const [keyword, setKeyword] = useState("");
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
 
-  const pendingCount = useMemo(() => orders.length, [orders]);
+  const currentCount = useMemo(() => orders.length, [orders]);
 
   const loadOrders = async () => {
     if (!token.trim()) {
@@ -36,7 +43,14 @@ export default function AdminOrdersPage() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("/api/admin/orders", {
+      const params = new URLSearchParams({
+        status: viewStatus,
+      });
+      if (keyword.trim()) {
+        params.set("q", keyword.trim());
+      }
+
+      const res = await fetch(`/api/admin/orders?${params.toString()}`, {
         headers: { "x-admin-token": token.trim() },
       });
       const data = await res.json();
@@ -45,7 +59,7 @@ export default function AdminOrdersPage() {
         return;
       }
       setOrders(data.orders ?? []);
-      setMessage("已刷新待审核订单。");
+      setMessage("已刷新订单列表。");
     } catch {
       setMessage("网络异常，加载失败。");
     } finally {
@@ -98,7 +112,7 @@ export default function AdminOrdersPage() {
 
         <Card className="border-border/50 mb-6">
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <p className="text-sm mb-1">后台口令</p>
                 <Input
@@ -116,13 +130,44 @@ export default function AdminOrdersPage() {
                   placeholder="例如：caoyuchuan"
                 />
               </div>
+              <div>
+                <p className="text-sm mb-1">搜索（可选）</p>
+                <Input
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="订单号 / 邮箱 / 微信号"
+                />
+              </div>
               <div className="flex items-end">
                 <Button className="w-full" onClick={loadOrders} disabled={loading}>
-                  {loading ? "处理中..." : "刷新待审核订单"}
+                  {loading ? "处理中..." : "刷新订单列表"}
                 </Button>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-3">当前待审核：{pendingCount} 条</p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Button
+                variant={viewStatus === "pending_review" ? "default" : "outline"}
+                onClick={() => setViewStatus("pending_review")}
+                disabled={loading}
+              >
+                待审核
+              </Button>
+              <Button
+                variant={viewStatus === "paid_confirmed" ? "default" : "outline"}
+                onClick={() => setViewStatus("paid_confirmed")}
+                disabled={loading}
+              >
+                已确认
+              </Button>
+              <Button
+                variant={viewStatus === "rejected" ? "default" : "outline"}
+                onClick={() => setViewStatus("rejected")}
+                disabled={loading}
+              >
+                已驳回
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">当前列表：{currentCount} 条</p>
             {message && <p className="text-sm mt-2">{message}</p>}
           </CardContent>
         </Card>
@@ -140,32 +185,41 @@ export default function AdminOrdersPage() {
                   <p>金额：¥{order.amount}</p>
                   <p>支付方式：{order.channel}</p>
                   <p>付款备注：{order.payer_note || "-"}</p>
+                  {order.reviewed_by ? <p>审核人：{order.reviewed_by}</p> : null}
+                  {order.reviewed_at ? (
+                    <p>审核时间：{new Date(order.reviewed_at).toLocaleString()}</p>
+                  ) : null}
+                  {order.reviewed_note ? <p>审核备注：{order.reviewed_note}</p> : null}
                 </div>
-                <div className="mt-4">
-                  <p className="text-sm mb-1">审核备注（可选）</p>
-                  <Input
-                    value={notes[order.order_no] ?? ""}
-                    onChange={(e) =>
-                      setNotes((prev) => ({ ...prev, [order.order_no]: e.target.value }))
-                    }
-                    placeholder="例如：已在微信账单核验到账"
-                  />
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button
-                    onClick={() => reviewOrder(order.order_no, "paid_confirmed")}
-                    disabled={loading}
-                  >
-                    确认收款
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => reviewOrder(order.order_no, "rejected")}
-                    disabled={loading}
-                  >
-                    驳回订单
-                  </Button>
-                </div>
+                {viewStatus === "pending_review" && (
+                  <>
+                    <div className="mt-4">
+                      <p className="text-sm mb-1">审核备注（可选）</p>
+                      <Input
+                        value={notes[order.order_no] ?? ""}
+                        onChange={(e) =>
+                          setNotes((prev) => ({ ...prev, [order.order_no]: e.target.value }))
+                        }
+                        placeholder="例如：已在微信账单核验到账"
+                      />
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button
+                        onClick={() => reviewOrder(order.order_no, "paid_confirmed")}
+                        disabled={loading}
+                      >
+                        确认收款
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => reviewOrder(order.order_no, "rejected")}
+                        disabled={loading}
+                      >
+                        驳回订单
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           ))}
