@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const checked = verifyCode(phone, code);
+    const checked = await verifyCode(phone, code);
     if (!checked.ok) {
       return NextResponse.json(
         { ok: false, message: checked.reason },
@@ -109,6 +109,13 @@ export async function POST(req: Request) {
     return res;
   } catch (error) {
     console.error("verify-code failed:", error);
+    const msg = String((error as { message?: string })?.message ?? "");
+    if (msg.includes("auth_sms_codes")) {
+      return NextResponse.json(
+        { ok: false, message: "请先执行数据库迁移：docs/supabase-migration-auth-v1.sql" },
+        { status: 500 }
+      );
+    }
     return NextResponse.json(
       { ok: false, message: "登录失败，请稍后重试。" },
       { status: 500 }

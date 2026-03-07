@@ -25,10 +25,21 @@ create table if not exists public.auth_login_events (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.auth_sms_codes (
+  phone text primary key,
+  code text not null,
+  sent_at timestamptz not null,
+  expires_at timestamptz not null,
+  attempts int not null default 0 check (attempts >= 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists idx_app_users_phone on public.app_users(phone);
 create index if not exists idx_app_users_last_login on public.app_users(last_login_at desc);
 create index if not exists idx_auth_login_events_phone on public.auth_login_events(phone, created_at desc);
 create index if not exists idx_auth_login_events_user_id on public.auth_login_events(user_id, created_at desc);
+create index if not exists idx_auth_sms_codes_expires_at on public.auth_sms_codes(expires_at);
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -45,5 +56,11 @@ create trigger trg_app_users_updated_at
 before update on public.app_users
 for each row execute function public.set_updated_at();
 
+drop trigger if exists trg_auth_sms_codes_updated_at on public.auth_sms_codes;
+create trigger trg_auth_sms_codes_updated_at
+before update on public.auth_sms_codes
+for each row execute function public.set_updated_at();
+
 alter table public.app_users enable row level security;
 alter table public.auth_login_events enable row level security;
+alter table public.auth_sms_codes enable row level security;

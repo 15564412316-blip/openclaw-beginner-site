@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { canSendCode, issueCode, validatePhone } from "@/lib/authSmsStore";
+import { canSendCode, generateSmsCode, saveCode, validatePhone } from "@/lib/authSmsStore";
 
 type Payload = {
   phone?: string;
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const gate = canSendCode(phone);
+    const gate = await canSendCode(phone);
     if (!gate.ok) {
       return NextResponse.json(
         { ok: false, message: `发送太频繁，请 ${gate.retryAfterSec}s 后再试。` },
@@ -25,7 +25,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const { code } = issueCode(phone);
+    const code = generateSmsCode();
+    await saveCode(phone, code);
     const smsProvider = (process.env.SMS_PROVIDER ?? "").trim();
     const isDev = process.env.NODE_ENV !== "production";
 
@@ -56,6 +57,13 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error("send-code failed:", error);
+    const msg = String((error as { message?: string })?.message ?? "");
+    if (msg.includes("auth_sms_codes")) {
+      return NextResponse.json(
+        { ok: false, message: "请先执行数据库迁移：docs/supabase-migration-auth-v1.sql" },
+        { status: 500 }
+      );
+    }
     return NextResponse.json(
       { ok: false, message: "发送验证码失败，请稍后重试。" },
       { status: 500 }

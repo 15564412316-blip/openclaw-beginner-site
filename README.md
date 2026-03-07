@@ -53,3 +53,4 @@ npm run build
    Then check login data in:
    - `app_users`
    - `auth_login_events`
+   - `auth_sms_codes` (OTP temporary records)
