@@ -40,8 +40,11 @@ if not "%LATEST_REPORT%"=="" (
 
 :after_report
 echo.
-set /p OPEN_NOW=安装完成。是否立即打开项目目录? (y/n): 
-if /i "%OPEN_NOW%"=="y" start "" "%USERPROFILE%\openclaw"
+echo 8 秒后将自动打开安装目录。按任意键可取消自动打开。
+choice /C YN /N /T 8 /D Y >nul
+if errorlevel 2 goto :skip_open
+start "" "%USERPROFILE%\openclaw"
+:skip_open
 
 echo.
 echo 建议：请下载并阅读 openclaw-ops-guide.txt（后续运行与API配置）

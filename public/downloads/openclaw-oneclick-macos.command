@@ -26,8 +26,10 @@ if [[ -n "$LATEST_REPORT" ]]; then
 fi
 
 echo
-read -r -p "安装完成。是否立即打开项目目录? (y/n): " OPEN_NOW
-if [[ "$OPEN_NOW" == "y" || "$OPEN_NOW" == "Y" ]]; then
+echo "8 秒后将自动打开安装目录。按任意键可取消自动打开。"
+if read -r -s -n 1 -t 8 _; then
+  echo "已取消自动打开。"
+else
   open "$HOME/openclaw"
 fi
 
