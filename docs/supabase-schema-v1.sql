@@ -105,8 +105,7 @@ create table if not exists public.ai_chat_usage_daily (
   used_count int not null default 0 check (used_count >= 0),
   limit_count int not null default 10 check (limit_count > 0),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint uq_ai_usage unique (usage_date, coalesce(email, ''), coalesce(client_id, ''))
+  updated_at timestamptz not null default now()
 );
 
 -- ---------- Indexes ----------
@@ -119,6 +118,8 @@ create index if not exists idx_install_checks_session on public.install_checks(s
 create index if not exists idx_support_tickets_email on public.support_tickets(email);
 create index if not exists idx_support_tickets_status on public.support_tickets(status, created_at desc);
 create index if not exists idx_ai_chat_usage_daily_key on public.ai_chat_usage_daily(usage_date, email, client_id);
+create unique index if not exists idx_ai_chat_usage_daily_unique_expr
+on public.ai_chat_usage_daily(usage_date, coalesce(email, ''), coalesce(client_id, ''));
 
 -- ---------- updated_at trigger ----------
 create or replace function public.set_updated_at()

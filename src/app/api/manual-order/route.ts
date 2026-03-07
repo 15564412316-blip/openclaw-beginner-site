@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
+import { getSupabaseAdminClient } from "@/lib/supabaseAdmin";
 
 type Payload = {
   email?: string;
   wechat?: string;
   channel?: "wechat" | "alipay" | "";
-  amount?: number;
-  plan?: string;
+  amount?: number | string;
+  plan?: "auto_49" | "vip_99" | string;
   payerNote?: string;
+};
+
+const PLAN_PRICE: Record<"auto_49" | "vip_99", number> = {
+  auto_49: 49.9,
+  vip_99: 99,
 };
 
 function createOrderNo() {
@@ -21,13 +27,21 @@ function createOrderNo() {
   return `OC${y}${m}${d}${hh}${mm}${ss}${rand}`;
 }
 
+function normalizeAmount(value: number | string | undefined) {
+  const raw = typeof value === "string" ? value.trim() : value;
+  const parsed = Number(raw ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Payload;
     const email = (body.email ?? "").trim();
+    const wechat = (body.wechat ?? "").trim();
+    const payerNote = (body.payerNote ?? "").trim();
     const channel = body.channel ?? "";
-    const amount = Number(body.amount ?? 0);
-    const plan = (body.plan ?? "").trim();
+    const plan = (body.plan ?? "").trim() as "auto_49" | "vip_99" | "";
+    const amount = normalizeAmount(body.amount);
 
     if (!email || !channel || !plan || !amount) {
       return NextResponse.json(
@@ -36,7 +50,60 @@ export async function POST(req: Request) {
       );
     }
 
-    const orderNo = createOrderNo();
+    if (!["wechat", "alipay"].includes(channel)) {
+      return NextResponse.json(
+        { ok: false, message: "支付方式无效，请重新选择。" },
+        { status: 400 }
+      );
+    }
+
+    if (!["auto_49", "vip_99"].includes(plan)) {
+      return NextResponse.json(
+        { ok: false, message: "套餐无效，请刷新页面后重试。" },
+        { status: 400 }
+      );
+    }
+
+    const expectedAmount = PLAN_PRICE[plan];
+    if (Math.abs(amount - expectedAmount) > 0.01) {
+      return NextResponse.json(
+        { ok: false, message: "金额校验失败，请勿修改支付金额。" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = getSupabaseAdminClient();
+    let orderNo = "";
+    let inserted = false;
+
+    for (let i = 0; i < 3; i += 1) {
+      orderNo = createOrderNo();
+      const { error } = await supabase.from("orders").insert({
+        order_no: orderNo,
+        email,
+        wechat: wechat || null,
+        plan,
+        amount: expectedAmount,
+        channel,
+        payer_note: payerNote || null,
+        status: "pending_review",
+      });
+
+      if (!error) {
+        inserted = true;
+        break;
+      }
+
+      // Unique collision on order_no, retry with a new order number.
+      if (error.code !== "23505") {
+        throw error;
+      }
+    }
+
+    if (!inserted) {
+      throw new Error("Failed to create unique order number");
+    }
+
     return NextResponse.json(
       {
         ok: true,
@@ -46,9 +113,10 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
-  } catch {
+  } catch (error) {
+    console.error("manual-order submit failed:", error);
     return NextResponse.json(
-      { ok: false, message: "提交失败，请稍后重试。" },
+      { ok: false, message: "提交失败，请稍后重试或联系管理员。" },
       { status: 500 }
     );
   }
