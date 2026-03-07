@@ -1,0 +1,57 @@
+import { NextResponse } from "next/server";
+import { validatePhone, verifyCode } from "@/lib/authSmsStore";
+
+type Payload = {
+  phone?: string;
+  code?: string;
+};
+
+const SESSION_DAYS = 7;
+
+export async function POST(req: Request) {
+  try {
+    const body = (await req.json()) as Payload;
+    const phone = (body.phone ?? "").trim();
+    const code = (body.code ?? "").trim();
+
+    if (!validatePhone(phone)) {
+      return NextResponse.json(
+        { ok: false, message: "手机号格式不正确。" },
+        { status: 400 }
+      );
+    }
+    if (!/^\d{6}$/.test(code)) {
+      return NextResponse.json(
+        { ok: false, message: "验证码应为 6 位数字。" },
+        { status: 400 }
+      );
+    }
+
+    const checked = verifyCode(phone, code);
+    if (!checked.ok) {
+      return NextResponse.json(
+        { ok: false, message: checked.reason },
+        { status: 400 }
+      );
+    }
+
+    const res = NextResponse.json(
+      { ok: true, message: "登录成功。", phone },
+      { status: 200 }
+    );
+    res.cookies.set("oc_user_phone", phone, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: SESSION_DAYS * 24 * 60 * 60,
+    });
+    return res;
+  } catch (error) {
+    console.error("verify-code failed:", error);
+    return NextResponse.json(
+      { ok: false, message: "登录失败，请稍后重试。" },
+      { status: 500 }
+    );
+  }
+}
