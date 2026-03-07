@@ -22,6 +22,7 @@
    - `NEXT_PUBLIC_SUPPORT_WECHAT`（可选，付费后展示）
    - `SUPABASE_URL`（后端用）
    - `SUPABASE_SERVICE_ROLE_KEY`（后端用）
+   - `ADMIN_REVIEW_TOKEN`（后台审核口令）
 5. 验证首发版本：
    - 首页可访问
    - 引导流程可走完
@@ -44,6 +45,7 @@
 3. 建立人工审核 SOP：
    - 收到“我已付款”后 10 分钟内核验
    - 核验通过 -> 订单改为 `paid_confirmed`
+   - 审核入口：`/admin/orders`（需口令）
 4. 退款 SOP：
    - 自动安装不可用且无法修复 -> 可退款
 

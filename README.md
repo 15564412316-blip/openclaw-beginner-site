@@ -35,3 +35,11 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run lint
 npm run build
 ```
+
+## Admin Review (MVP)
+
+1. Set env vars in `.env.local`:
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `ADMIN_REVIEW_TOKEN`
+2. Open `/admin/orders` to review pending manual-payment orders.
