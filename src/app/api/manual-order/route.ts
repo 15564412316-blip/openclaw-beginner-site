@@ -11,8 +11,8 @@ type Payload = {
 };
 
 const PLAN_PRICE: Record<"auto_49" | "vip_99", number> = {
-  auto_49: 49.9,
-  vip_99: 99,
+  auto_49: 99.9,
+  vip_99: 199,
 };
 
 function createOrderNo() {

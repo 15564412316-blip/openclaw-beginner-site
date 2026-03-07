@@ -5,12 +5,12 @@ export const PLAN_CONFIG: Record<
   { amount: number; name: string; successRedirectPath: string }
 > = {
   auto_49: {
-    amount: 49.9,
+    amount: 99.9,
     name: "自动安装服务",
     successRedirectPath: "/guide/local?paid_auto=1",
   },
   vip_99: {
-    amount: 99,
+    amount: 199,
     name: "一对一代办服务",
     successRedirectPath: "/contact",
   },

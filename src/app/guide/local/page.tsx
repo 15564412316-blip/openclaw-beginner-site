@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Terminal, Download, ArrowRight, ChevronDown, ChevronUp, HelpCircle, ClipboardCheck } from "lucide-react";
 import { EnvironmentCheck } from "@/components/EnvironmentCheck";
 import { StepDetailButton } from "@/components/StepDetail";
+import { OneTimeDownloadPanel } from "@/components/checkout/OneTimeDownloadPanel";
 
 /**
  * 安装步骤数据
@@ -253,6 +254,7 @@ export default function LocalInstallPage() {
   const selectedLevel = params?.get("level") ?? null;
   const selectedPriority = params?.get("priority") ?? null;
   const paidAuto = params?.get("paid_auto") === "1";
+  const orderNo = params?.get("orderNo") ?? "";
   const systemLabel = selectedSystem === "windows" ? "Windows" : selectedSystem === "macos" ? "macOS" : null;
   const levelLabel =
     selectedLevel === "beginner"
@@ -272,8 +274,10 @@ export default function LocalInstallPage() {
           : selectedPriority === "online"
             ? "长期在线运行"
             : null;
-  const macCommand = "chmod +x installer/openclaw-installer.sh && ./installer/openclaw-installer.sh doctor";
-  const winCommand = "powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 doctor";
+  const macCommand =
+    "chmod +x installer/openclaw-installer.sh && ./installer/openclaw-installer.sh doctor && ./installer/openclaw-installer.sh install --dir \"$HOME/openclaw\" && ./installer/openclaw-installer.sh verify --dir \"$HOME/openclaw\"";
+  const winCommand =
+    "powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 doctor; powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 install -Dir \"$HOME\\openclaw\"; powershell -ExecutionPolicy Bypass -File .\\installer\\openclaw-installer.ps1 verify -Dir \"$HOME\\openclaw\"";
   const preferredPlatform: "mac" | "win" = selectedSystem === "windows" ? "win" : "mac";
   const preferredCommand = preferredPlatform === "win" ? winCommand : macCommand;
 
@@ -351,12 +355,12 @@ export default function LocalInstallPage() {
             <h2 className="text-xl font-semibold mb-3">自动安装（简单三步）</h2>
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h2 className="text-lg font-semibold mb-1">49.9 全自动安装</h2>
+                <h2 className="text-lg font-semibold mb-1">99.9 全自动安装</h2>
                 <p className="text-sm text-muted-foreground">
-                  几乎不用研究命令。按步骤做完就行，49.9 已包含安装失败协助。
+                  几乎不用研究命令。按步骤做完就行，99.9 已包含安装失败协助。
                 </p>
               </div>
-              <span className="text-sm font-semibold text-primary">¥49.9</span>
+              <span className="text-sm font-semibold text-primary">¥99.9</span>
             </div>
 
             {!paidAuto ? (
@@ -369,7 +373,7 @@ export default function LocalInstallPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button asChild>
-                    <Link href="/checkout/auto">立即开通自动安装（¥49.9）</Link>
+                    <Link href="/checkout/auto">立即开通自动安装（¥99.9）</Link>
                   </Button>
                   <Button asChild variant="outline">
                     <Link href="/pricing">查看价格说明</Link>
@@ -381,17 +385,8 @@ export default function LocalInstallPage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                  <Button asChild variant="outline">
-                    <a href="/downloads/openclaw-installer.sh" download>
-                      下载 macOS 脚本
-                    </a>
-                  </Button>
-                  <Button asChild variant="outline">
-                    <a href="/downloads/openclaw-installer.ps1" download>
-                      下载 Windows 脚本
-                    </a>
-                  </Button>
+                <div className="mb-4">
+                  <OneTimeDownloadPanel defaultOrderNo={orderNo} />
                 </div>
 
                 <Button className="w-full sm:w-auto" onClick={() => setShowAutoCommand((v) => !v)}>
@@ -404,6 +399,9 @@ export default function LocalInstallPage() {
                       {preferredPlatform === "win" ? "Windows" : "macOS"} 运行命令：
                     </p>
                     <code className="text-xs break-all">{preferredCommand}</code>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      这条命令会自动执行：环境检测 → 安装代码与依赖 → 验证安装结果。完成后再去配置 API Key 即可。
+                    </p>
                     <div className="mt-2">
                       <Button
                         size="sm"

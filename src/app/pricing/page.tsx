@@ -15,9 +15,9 @@ const plans = [
   {
     id: "auto",
     name: "自动安装",
-    price: "¥49.9",
+    price: "¥99.9",
     desc: "下载脚本一键执行，自动检测与安装，包含失败协助。",
-    features: ["跨平台脚本", "doctor/install/config/verify", "安装失败协助（已包含）"],
+    features: ["跨平台脚本", "doctor/install/config/verify", "订单仅限下载 1 次", "安装失败协助（已包含）"],
     cta: "购买自动安装",
     href: "/checkout/auto",
     recommended: true,
@@ -25,7 +25,7 @@ const plans = [
   {
     id: "support",
     name: "一对一代办",
-    price: "¥99",
+    price: "¥199",
     desc: "适合不想自己操作的用户，直接一对一代办安装。",
     features: ["一对一代办安装", "一次性安装排障", "不含长期代运维"],
     cta: "购买一对一代办",
@@ -39,7 +39,7 @@ export default function PricingPage() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold mb-3">选择安装方式</h1>
-          <p className="text-muted-foreground">默认建议先用自动安装（49.9）；如果你完全不想自己动手，可直接选 99 一对一代办。</p>
+          <p className="text-muted-foreground">默认建议先用自动安装（99.9）；如果你完全不想自己动手，可直接选 199 一对一代办。</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

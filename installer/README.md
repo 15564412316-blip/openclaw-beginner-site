@@ -37,6 +37,12 @@ chmod +x installer/openclaw-installer.sh
 ./installer/openclaw-installer.sh report
 ```
 
+Quick one-line (without API key config):
+
+```bash
+chmod +x installer/openclaw-installer.sh && ./installer/openclaw-installer.sh doctor && ./installer/openclaw-installer.sh install --dir "$HOME/openclaw" && ./installer/openclaw-installer.sh verify --dir "$HOME/openclaw"
+```
+
 ### Windows (PowerShell)
 
 ```powershell
@@ -46,6 +52,12 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\installer\openclaw-installer.ps1 config -ApiKey "sk-xxxx"
 .\installer\openclaw-installer.ps1 verify -Dir "$HOME\openclaw"
 .\installer\openclaw-installer.ps1 report
+```
+
+Quick one-line (without API key config):
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass; .\installer\openclaw-installer.ps1 doctor; .\installer\openclaw-installer.ps1 install -Dir "$HOME\openclaw"; .\installer\openclaw-installer.ps1 verify -Dir "$HOME\openclaw"
 ```
 
 ## Output

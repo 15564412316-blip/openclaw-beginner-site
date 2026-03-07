@@ -140,6 +140,16 @@ create table if not exists public.auth_sms_codes (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.download_claims (
+  id uuid primary key default gen_random_uuid(),
+  order_no text not null unique,
+  plan text not null,
+  platform text not null check (platform in ('mac', 'win')),
+  claimed_at timestamptz not null default now(),
+  claimed_ip text,
+  claimed_user_agent text
+);
+
 -- ---------- Indexes ----------
 create index if not exists idx_waitlist_leads_email on public.waitlist_leads(email);
 create index if not exists idx_orders_email on public.orders(email);
@@ -157,6 +167,8 @@ create index if not exists idx_app_users_last_login on public.app_users(last_log
 create index if not exists idx_auth_login_events_phone on public.auth_login_events(phone, created_at desc);
 create index if not exists idx_auth_login_events_user_id on public.auth_login_events(user_id, created_at desc);
 create index if not exists idx_auth_sms_codes_expires_at on public.auth_sms_codes(expires_at);
+create index if not exists idx_download_claims_order_no on public.download_claims(order_no);
+create index if not exists idx_download_claims_claimed_at on public.download_claims(claimed_at desc);
 
 -- ---------- updated_at trigger ----------
 create or replace function public.set_updated_at()
@@ -209,6 +221,7 @@ alter table public.ai_chat_usage_daily enable row level security;
 alter table public.app_users enable row level security;
 alter table public.auth_login_events enable row level security;
 alter table public.auth_sms_codes enable row level security;
+alter table public.download_claims enable row level security;
 
 -- Service-role handles admin write/read. Public direct table access is denied by default.
 -- Add explicit policies later when user login is enabled.

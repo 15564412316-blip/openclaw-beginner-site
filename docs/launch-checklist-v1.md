@@ -34,6 +34,7 @@
    - [docs/supabase-schema-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-schema-v1.sql)
    - 若为旧项目，再执行 [docs/supabase-migration-payment-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-payment-v1.sql)
    - 若已启用手机号登录，再执行 [docs/supabase-migration-auth-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-auth-v1.sql)
+   - 若启用“付费仅下载一次”，再执行 [docs/supabase-migration-download-lock-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-download-lock-v1.sql)
 3. 创建后台管理员账号（Supabase Auth，可后补）
 4. 配置备份：
    - 每日自动备份（至少保留 7 天）
@@ -42,6 +43,7 @@
    - 工单可写入 `support_tickets`
    - 登录用户能写入 `app_users`
    - 登录事件能写入 `auth_login_events`
+   - 领取下载能写入 `download_claims`
 
 ## 4. 支付（当前 Demo）
 1. 准备微信/支付宝商户收款码图片
@@ -61,8 +63,9 @@
 
 ## 6. 运营与风控
 1. 免费模式仅提供教程，不开放人工直连
-2. 49.9 包含失败协助，不做二次升级收费
-3. 99 为独立代办服务，仅面向明确需求用户
+2. 99.9 包含失败协助，不做二次升级收费
+3. 自动安装为 99.9，且每订单仅可下载一次
+4. 199 为独立代办服务，仅面向明确需求用户
 4. 增加频控：
    - AI 问答日限（默认 10 次）
    - 表单防刷（reCAPTCHA/hCaptcha）

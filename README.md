@@ -50,6 +50,8 @@ npm run build
 3. Open `/login` for phone-code login (dev mode shows `debugCode` if SMS provider is not configured).
 4. For existing Supabase projects, run:
    - `docs/supabase-migration-auth-v1.sql`
+   - `docs/supabase-migration-download-lock-v1.sql` (one-time paid download lock)
+   - `docs/supabase-migration-payment-v1.sql` (payment status enum update)
    Then check login data in:
    - `app_users`
    - `auth_login_events`
