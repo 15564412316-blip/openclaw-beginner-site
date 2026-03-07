@@ -45,6 +45,9 @@ export function Header() {
         {/* 操作按钮 */}
         <div className="flex items-center space-x-4">
           <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
+            <Link href="/me">我的页面</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
             <Link href="/login">登录</Link>
           </Button>
           <Button asChild variant="outline" size="sm" className="hidden sm:flex">
