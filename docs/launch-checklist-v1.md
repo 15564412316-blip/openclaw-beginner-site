@@ -33,12 +33,15 @@
 2. 在 SQL Editor 执行：
    - [docs/supabase-schema-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-schema-v1.sql)
    - 若为旧项目，再执行 [docs/supabase-migration-payment-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-payment-v1.sql)
+   - 若已启用手机号登录，再执行 [docs/supabase-migration-auth-v1.sql](/Users/caoyuchuan/openclaw-guide/docs/supabase-migration-auth-v1.sql)
 3. 创建后台管理员账号（Supabase Auth，可后补）
 4. 配置备份：
    - 每日自动备份（至少保留 7 天）
 5. 验证数据链路：
    - 人工订单能写入 `orders`
    - 工单可写入 `support_tickets`
+   - 登录用户能写入 `app_users`
+   - 登录事件能写入 `auth_login_events`
 
 ## 4. 支付（当前 Demo）
 1. 准备微信/支付宝商户收款码图片

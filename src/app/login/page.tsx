@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [debugCode, setDebugCode] = useState("");
   const [loggedInPhone, setLoggedInPhone] = useState("");
+  const [loginCount, setLoginCount] = useState<number | null>(null);
 
   const canSend = useMemo(() => countdown <= 0 && !sending, [countdown, sending]);
   const canLogin = useMemo(() => !verifying && phone.trim() && code.trim(), [verifying, phone, code]);
@@ -43,11 +44,16 @@ export default function LoginPage() {
       const data = await res.json();
       if (data?.loggedIn && data?.phone) {
         setLoggedInPhone(String(data.phone));
+        setLoginCount(
+          typeof data?.profile?.login_count === "number" ? data.profile.login_count : null
+        );
       } else {
         setLoggedInPhone("");
+        setLoginCount(null);
       }
     } catch {
       setLoggedInPhone("");
+      setLoginCount(null);
     }
   };
 
@@ -125,6 +131,7 @@ export default function LoginPage() {
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setLoggedInPhone("");
+    setLoginCount(null);
     setMessage("已退出登录。");
   };
 
@@ -139,6 +146,7 @@ export default function LoginPage() {
             {loggedInPhone ? (
               <div className="space-y-3">
                 <p className="text-sm">当前已登录：{loggedInPhone}</p>
+                {loginCount !== null && <p className="text-xs text-muted-foreground">累计登录：{loginCount} 次</p>}
                 <div className="flex gap-2">
                   <Button onClick={() => router.push(redirect)}>进入站点</Button>
                   <Button variant="outline" onClick={logout}>

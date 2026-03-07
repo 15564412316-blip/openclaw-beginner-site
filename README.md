@@ -48,3 +48,8 @@ npm run build
    - `SMS_PROVIDER` (optional now; placeholder for Tencent/Alibaba SMS)
 2. Open `/admin/orders` to review pending manual-payment orders.
 3. Open `/login` for phone-code login (dev mode shows `debugCode` if SMS provider is not configured).
+4. For existing Supabase projects, run:
+   - `docs/supabase-migration-auth-v1.sql`
+   Then check login data in:
+   - `app_users`
+   - `auth_login_events`
