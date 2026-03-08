@@ -53,7 +53,7 @@ export function OneTimeDownloadPanel() {
           下载 macOS 一键安装器（一次）
         </Button>
         <Button variant="outline" disabled={loading} onClick={() => claim("win")}>
-          下载 Windows 一键安装器（一次）
+          下载 Windows 安装程序（一次）
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">

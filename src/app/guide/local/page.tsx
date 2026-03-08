@@ -381,12 +381,12 @@ export default function LocalInstallPage() {
                     </Button>
                     <Button asChild variant="outline">
                       <a href="/downloads/openclaw-oneclick-windows.bat" download>
-                        下载 Windows 一键安装器
+                        下载 Windows 安装程序（双击启动）
                       </a>
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    安装完成后你可以选择“立即打开”。若不立即打开，可下载后续指南随时查看。
+                    Windows 双击后会打开可视化安装窗口；安装完成默认自动打开目录，可取消。
                   </p>
                 </div>
 
