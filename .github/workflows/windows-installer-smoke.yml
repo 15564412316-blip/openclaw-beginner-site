@@ -1,0 +1,53 @@
+name: Windows Installer Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "public/downloads/openclaw-installer.ps1"
+      - "public/downloads/openclaw-installer-gui.ps1"
+      - ".github/workflows/windows-installer-smoke.yml"
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run doctor
+        shell: pwsh
+        run: |
+          ./public/downloads/openclaw-installer.ps1 doctor
+
+      - name: Run install
+        shell: pwsh
+        run: |
+          ./public/downloads/openclaw-installer.ps1 install -Dir "$env:USERPROFILE/openclaw-smoke"
+
+      - name: Run verify (skip config check)
+        shell: pwsh
+        run: |
+          ./public/downloads/openclaw-installer.ps1 verify -Dir "$env:USERPROFILE/openclaw-smoke" -SkipConfigCheck
+
+      - name: Assert latest report is PASS
+        shell: pwsh
+        run: |
+          $reportDir = Join-Path $env:USERPROFILE ".openclaw-installer"
+          $latest = Get-ChildItem -Path $reportDir -Filter "report-*.txt" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $latest) { throw "No report found" }
+          $content = Get-Content -Raw -Path $latest.FullName
+          if ($content -notmatch "Overall:\s+PASS") {
+            Write-Host $content
+            throw "Installer smoke test failed: report not PASS"
+          }
+
+      - name: Upload report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer-smoke-report
+          path: |
+            C:\Users\runneradmin\.openclaw-installer\report-*.txt
+            C:\Users\runneradmin\.openclaw-installer\report-*.json

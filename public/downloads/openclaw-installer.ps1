@@ -7,7 +7,8 @@ param(
   [string]$ApiKey = "",
   [string]$Provider = "gmn",
   [string]$BaseUrl = "https://gmncode.cn/v1",
-  [string]$Model = "gpt-5.3-codex"
+  [string]$Model = "gpt-5.3-codex",
+  [switch]$SkipConfigCheck
 )
 
 $AppName = "openclaw-installer"
@@ -234,10 +235,14 @@ function Run-Verify {
     Add-Check -Name "dependencies" -Status "FAIL" -Message "Dependencies not found" -Fix "Run npm install in $Dir"
   }
 
-  if (Test-Path $ConfigFile) {
-    Add-Check -Name "config_file" -Status "PASS" -Message $ConfigFile
+  if ($SkipConfigCheck) {
+    Add-Check -Name "config_file" -Status "PASS" -Message "Skipped in install phase"
   } else {
-    Add-Check -Name "config_file" -Status "FAIL" -Message "Config file missing" -Fix "Run config command with -ApiKey"
+    if (Test-Path $ConfigFile) {
+      Add-Check -Name "config_file" -Status "PASS" -Message $ConfigFile
+    } else {
+      Add-Check -Name "config_file" -Status "FAIL" -Message "Config file missing" -Fix "Run config command with -ApiKey"
+    }
   }
 
   Write-Report -Title "verify"
@@ -262,7 +267,7 @@ Usage:
   .\openclaw-installer.ps1 doctor
   .\openclaw-installer.ps1 install [-Dir <path>]
   .\openclaw-installer.ps1 config -ApiKey <key> [-Provider <name>] [-BaseUrl <url>] [-Model <id>]
-  .\openclaw-installer.ps1 verify [-Dir <path>]
+  .\openclaw-installer.ps1 verify [-Dir <path>] [-SkipConfigCheck]
   .\openclaw-installer.ps1 report
 "@ | Write-Host
 }

@@ -22,6 +22,12 @@
 
 这样终端用户支付后会直接下载 EXE，不需要任何命令操作。
 
+另外已内置安装链路冒烟测试：
+
+- 工作流：`.github/workflows/windows-installer-smoke.yml`
+- 会在 Windows runner 执行 `doctor -> install -> verify -SkipConfigCheck`
+- 只有报告为 `Overall: PASS` 才算通过
+
 ## 手动打包（备用）
 
 1. 打开 PowerShell，进入项目根目录。

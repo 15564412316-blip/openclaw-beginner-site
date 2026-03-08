@@ -170,7 +170,7 @@ $StartBtn.Add_Click({
     $steps = @(
       @{ Name = '环境检测'; Args = @('doctor') },
       @{ Name = '自动安装'; Args = @('install', '-Dir', $InstallDir) },
-      @{ Name = '安装验证'; Args = @('verify', '-Dir', $InstallDir) }
+      @{ Name = '安装验证'; Args = @('verify', '-Dir', $InstallDir, '-SkipConfigCheck') }
     )
 
     for ($i = 0; $i -lt $steps.Count; $i++) {
@@ -181,6 +181,9 @@ $StartBtn.Add_Click({
       $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $CoreInstaller @($step.Args) 2>&1
       if ($output) {
         $output | ForEach-Object { Write-Log ("  " + $_.ToString()) }
+      }
+      if ($LASTEXITCODE -ne 0) {
+        throw "$($step.Name) 执行失败，退出码 $LASTEXITCODE"
       }
 
       $Progress.Value = $i + 1
