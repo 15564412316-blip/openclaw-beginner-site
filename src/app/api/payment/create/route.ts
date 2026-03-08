@@ -11,6 +11,18 @@ type Payload = {
   channel?: "wechat" | "alipay" | string;
 };
 
+function resolveBaseUrl(req: Request) {
+  const proto = req.headers.get("x-forwarded-proto");
+  const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
+  if (proto && host) {
+    return `${proto}://${host}`;
+  }
+  if (host) {
+    return `http://${host}`;
+  }
+  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000";
+}
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Payload;
@@ -39,6 +51,7 @@ export async function POST(req: Request) {
     }
 
     const supabase = getSupabaseAdminClient();
+    const baseUrl = resolveBaseUrl(req);
     let orderNo = "";
     let inserted = false;
     const amount = PLAN_CONFIG[plan].amount;
@@ -52,6 +65,7 @@ export async function POST(req: Request) {
         plan,
         email,
         channel: channel as "wechat" | "alipay",
+        baseUrl,
       });
       const { error } = await supabase.from("orders").insert({
         order_no: orderNo,
@@ -82,7 +96,7 @@ export async function POST(req: Request) {
 
     // Rebuild pay url with actual orderNo for provider mock flow.
     const payUrl = hosted.provider === "mock"
-      ? `${process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000"}/mock-pay?orderNo=${encodeURIComponent(orderNo)}&amount=${encodeURIComponent(String(amount))}&plan=${encodeURIComponent(plan)}&email=${encodeURIComponent(email)}`
+      ? `${baseUrl}/mock-pay?orderNo=${encodeURIComponent(orderNo)}&amount=${encodeURIComponent(String(amount))}&plan=${encodeURIComponent(plan)}&email=${encodeURIComponent(email)}`
       : hosted.payUrl;
 
     return NextResponse.json(

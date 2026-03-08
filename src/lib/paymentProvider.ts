@@ -6,6 +6,7 @@ type CreatePaymentInput = {
   plan: PlanCode;
   email: string;
   channel: "wechat" | "alipay";
+  baseUrl?: string;
 };
 
 type CreatePaymentResult = {
@@ -20,7 +21,7 @@ export async function createHostedPayment(
   const provider = (process.env.PAYMENT_PROVIDER ?? "mock").trim();
 
   if (provider === "mock") {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000";
+    const baseUrl = input.baseUrl || process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000";
     const url = new URL("/mock-pay", baseUrl);
     url.searchParams.set("orderNo", input.orderNo);
     url.searchParams.set("amount", String(input.amount));
