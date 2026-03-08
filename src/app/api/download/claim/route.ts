@@ -8,6 +8,9 @@ type Payload = {
   platform?: "mac" | "win" | string;
 };
 
+const DEFAULT_WIN_EXE_URL =
+  "https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup.exe";
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Payload;
@@ -85,7 +88,7 @@ export async function POST(req: Request) {
 
     let fileUrl = "/downloads/openclaw-oneclick-macos.command";
     if (platform === "win") {
-      const remoteExe = (process.env.WIN_INSTALLER_EXE_URL ?? "").trim();
+      const remoteExe = (process.env.WIN_INSTALLER_EXE_URL ?? "").trim() || DEFAULT_WIN_EXE_URL;
       const exePath = join(process.cwd(), "public", "downloads", "openclaw-installer-setup.exe");
       if (remoteExe) {
         fileUrl = remoteExe;
