@@ -87,16 +87,43 @@ $Form.Controls.Add($CloseBtn)
 $Global:ReportPath = ''
 $InstallDir = Join-Path $env:USERPROFILE 'openclaw'
 $CoreInstaller = Join-Path $env:TEMP 'openclaw-installer.ps1'
+$ScriptUrls = @{
+  CoreInstaller = @(
+    'https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-installer.ps1',
+    'https://cdn.jsdelivr.net/gh/15564412316-blip/openclaw-beginner-site@main/public/downloads/openclaw-installer.ps1'
+  )
+  OpsGuide = @(
+    'https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-ops-guide.txt',
+    'https://cdn.jsdelivr.net/gh/15564412316-blip/openclaw-beginner-site@main/public/downloads/openclaw-ops-guide.txt'
+  )
+}
 
 function Write-Log([string]$line) {
   $LogBox.AppendText("$line`r`n")
   [System.Windows.Forms.Application]::DoEvents()
 }
 
+function Download-FromMirrors([string[]]$urls, [string]$outFile) {
+  foreach ($url in $urls) {
+    try {
+      Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $outFile
+      if (Test-Path $outFile) {
+        return $true
+      }
+    } catch {
+      # Try next mirror.
+    }
+  }
+  return $false
+}
+
 function Download-Guide {
   try {
     $dst = Join-Path $env:USERPROFILE 'Desktop\\openclaw-ops-guide.txt'
-    Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-ops-guide.txt' -OutFile $dst
+    $ok = Download-FromMirrors -urls $ScriptUrls.OpsGuide -outFile $dst
+    if (-not $ok) {
+      throw '网络异常，无法下载后续指南。'
+    }
     [System.Windows.Forms.MessageBox]::Show("后续指南已保存到桌面：openclaw-ops-guide.txt", '完成') | Out-Null
   } catch {
     [System.Windows.Forms.MessageBox]::Show("下载后续指南失败：$($_.Exception.Message)", '错误') | Out-Null
@@ -135,7 +162,10 @@ $StartBtn.Add_Click({
     $StepLabel.Text = '当前状态：准备中'
 
     Write-Log '[准备] 正在下载安装引擎...'
-    Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-installer.ps1' -OutFile $CoreInstaller
+    $ok = Download-FromMirrors -urls $ScriptUrls.CoreInstaller -outFile $CoreInstaller
+    if (-not $ok) {
+      throw '无法下载安装引擎，请检查网络后重试。'
+    }
 
     $steps = @(
       @{ Name = '环境检测'; Args = @('doctor') },
