@@ -193,6 +193,15 @@ $StartBtn.Add_Click({
   } catch {
     $StepLabel.Text = '当前状态：安装失败'
     Write-Log ("[错误] " + $_.Exception.Message)
+    $latest = Get-ChildItem -Path (Join-Path $env:USERPROFILE '.openclaw-installer') -Filter 'report-*.txt' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($latest) {
+      Write-Log ("[报告] " + $latest.FullName)
+      try {
+        (Get-Content -Path $latest.FullName -ErrorAction SilentlyContinue) | ForEach-Object { Write-Log ("  " + $_) }
+      } catch {
+        # no-op
+      }
+    }
     [System.Windows.Forms.MessageBox]::Show("安装失败：$($_.Exception.Message)", '错误') | Out-Null
   } finally {
     $StartBtn.Enabled = $true

@@ -19,6 +19,14 @@ $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $ReportTxt = Join-Path $LogDir "report-$Timestamp.txt"
 $ReportJson = Join-Path $LogDir "report-$Timestamp.json"
 $Checks = @()
+$RepoUrls = @(
+  "https://github.com/openclaw/openclaw.git",
+  "https://gitclone.com/github.com/openclaw/openclaw.git"
+)
+$RepoZipUrls = @(
+  "https://codeload.github.com/openclaw/openclaw/zip/refs/heads/main",
+  "https://ghfast.top/https://codeload.github.com/openclaw/openclaw/zip/refs/heads/main"
+)
 
 New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 
@@ -68,6 +76,9 @@ function Write-Report {
 
   Write-Host "Report TXT: $ReportTxt"
   Write-Host "Report JSON: $ReportJson"
+  foreach ($c in $Checks) {
+    Write-Host "[$($c.status)] $($c.name): $($c.message)"
+  }
 }
 
 function Require-Command {
@@ -109,6 +120,43 @@ function Try-Install-WithWinget {
     # Fall through to failed result.
   }
   Add-Check -Name "auto_install_$Name" -Status "FAIL" -Message "Failed to install $Name via winget" -Fix "Install $Name manually and rerun"
+  return $false
+}
+
+function Ensure-Directory([string]$path) {
+  if (-not (Test-Path $path)) {
+    New-Item -ItemType Directory -Path $path -Force | Out-Null
+  }
+}
+
+function Try-Clone-Repo([string]$url, [string]$targetDir) {
+  try {
+    git clone $url $targetDir | Out-Null
+    return $true
+  } catch {
+    return $false
+  }
+}
+
+function Try-Download-And-Unzip([string[]]$urls, [string]$targetDir) {
+  $tmpZip = Join-Path $env:TEMP "openclaw-main.zip"
+  $tmpExtract = Join-Path $env:TEMP "openclaw-main-extract"
+  foreach ($u in $urls) {
+    try {
+      if (Test-Path $tmpZip) { Remove-Item -Force $tmpZip -ErrorAction SilentlyContinue }
+      if (Test-Path $tmpExtract) { Remove-Item -Recurse -Force $tmpExtract -ErrorAction SilentlyContinue }
+      Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $tmpZip
+      Expand-Archive -Path $tmpZip -DestinationPath $tmpExtract -Force
+      $root = Get-ChildItem -Path $tmpExtract -Directory | Select-Object -First 1
+      if ($null -eq $root) { continue }
+      Ensure-Directory (Split-Path -Parent $targetDir)
+      if (Test-Path $targetDir) { Remove-Item -Recurse -Force $targetDir -ErrorAction SilentlyContinue }
+      Move-Item -Path $root.FullName -Destination $targetDir
+      return $true
+    } catch {
+      # try next url
+    }
+  }
   return $false
 }
 
@@ -167,17 +215,35 @@ function Run-Install {
       git -C $Dir pull --ff-only | Out-Null
       Add-Check -Name "git_pull" -Status "PASS" -Message "Updated existing repository"
     } catch {
-      Add-Check -Name "git_pull" -Status "FAIL" -Message "Failed to update repository" -Fix "Run: git -C `"$Dir`" pull --ff-only"
+      Add-Check -Name "git_pull" -Status "FAIL" -Message "Failed to update repository, continue with existing code" -Fix "Check network and retry"
     }
   } else {
-    try {
-      git clone https://github.com/openclaw/openclaw.git $Dir | Out-Null
-      Add-Check -Name "git_clone" -Status "PASS" -Message "Cloned openclaw into $Dir"
-    } catch {
-      Add-Check -Name "git_clone" -Status "FAIL" -Message "Failed to clone repository" -Fix "Check network and rerun install"
+    $cloned = $false
+    foreach ($repoUrl in $RepoUrls) {
+      if (Try-Clone-Repo -url $repoUrl -targetDir $Dir) {
+        Add-Check -Name "git_clone" -Status "PASS" -Message "Cloned from $repoUrl"
+        $cloned = $true
+        break
+      }
+    }
+    if (-not $cloned) {
+      $unzipped = Try-Download-And-Unzip -urls $RepoZipUrls -targetDir $Dir
+      if ($unzipped) {
+        Add-Check -Name "zip_fallback" -Status "PASS" -Message "Downloaded and extracted source zip"
+        $cloned = $true
+      }
+    }
+    if (-not $cloned) {
+      Add-Check -Name "git_clone" -Status "FAIL" -Message "Failed to fetch repository from all sources" -Fix "Check network/proxy and retry"
       Write-Report -Title "install"
       exit 1
     }
+  }
+
+  if (-not (Test-Path (Join-Path $Dir "package.json"))) {
+    Add-Check -Name "project_files" -Status "FAIL" -Message "package.json missing after fetch" -Fix "Retry install"
+    Write-Report -Title "install"
+    exit 1
   }
 
   try {
