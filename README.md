@@ -45,6 +45,7 @@ npm run build
    - `PAYMENT_PROVIDER` (`mock` for now)
    - `PAYMENT_WEBHOOK_SECRET` (for webhook signature check)
    - `NEXT_PUBLIC_SITE_URL` (e.g. `http://localhost:3000`)
+   - `WIN_INSTALLER_EXE_URL` (optional; remote EXE URL for paid Windows download)
    - `SMS_PROVIDER` (optional now; placeholder for Tencent/Alibaba SMS)
 2. Open `/admin/orders` to review pending manual-payment orders.
 3. Open `/login` for phone-code login (dev mode shows `debugCode` if SMS provider is not configured).

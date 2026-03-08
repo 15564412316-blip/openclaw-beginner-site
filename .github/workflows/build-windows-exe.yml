@@ -1,0 +1,39 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "public/downloads/openclaw-installer-gui.ps1"
+      - "scripts/build-win-exe.ps1"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build EXE
+        shell: pwsh
+        run: |
+          ./scripts/build-win-exe.ps1
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openclaw-installer-setup
+          path: public/downloads/openclaw-installer-setup.exe
+
+      - name: Publish Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: installer-latest
+          name: OpenClaw Installer Latest
+          make_latest: false
+          files: |
+            public/downloads/openclaw-installer-setup.exe

@@ -85,10 +85,15 @@ export async function POST(req: Request) {
 
     let fileUrl = "/downloads/openclaw-oneclick-macos.command";
     if (platform === "win") {
+      const remoteExe = (process.env.WIN_INSTALLER_EXE_URL ?? "").trim();
       const exePath = join(process.cwd(), "public", "downloads", "openclaw-installer-setup.exe");
-      fileUrl = existsSync(exePath)
-        ? "/downloads/openclaw-installer-setup.exe"
-        : "/downloads/openclaw-windows-installer-v2.zip";
+      if (remoteExe) {
+        fileUrl = remoteExe;
+      } else {
+        fileUrl = existsSync(exePath)
+          ? "/downloads/openclaw-installer-setup.exe"
+          : "/downloads/openclaw-windows-installer-v2.zip";
+      }
     }
 
     const res = NextResponse.json(

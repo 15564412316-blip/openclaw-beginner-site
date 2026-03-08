@@ -8,7 +8,21 @@
 - PowerShell 5.1+
 - 管理员权限（首次安装模块可能需要）
 
-## 打包步骤
+## 推荐方式（自动）
+
+仓库已内置 GitHub Actions 自动打包：
+
+- 工作流：`.github/workflows/build-windows-exe.yml`
+- 触发：更新 `public/downloads/openclaw-installer-gui.ps1` 后 push 到 `main`
+- 结果：自动生成 EXE 并发布到 tag `installer-latest`
+
+建议在生产环境配置：
+
+- `WIN_INSTALLER_EXE_URL=https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup.exe`
+
+这样终端用户支付后会直接下载 EXE，不需要任何命令操作。
+
+## 手动打包（备用）
 
 1. 打开 PowerShell，进入项目根目录。
 2. 执行：
@@ -20,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File scripts/build-win-exe.ps1
 3. 生成文件：
    - `public/downloads/openclaw-installer-setup.exe`
 
-## 发布步骤
+## 发布步骤（手动备用）
 
 1. 提交该 EXE 到仓库 `public/downloads/`。
 2. 推送到 `main`。
