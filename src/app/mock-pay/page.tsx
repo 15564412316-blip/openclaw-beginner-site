@@ -31,7 +31,8 @@ export default function MockPayPage() {
         setMessage(data?.message ?? "支付失败");
         return;
       }
-      setMessage("模拟支付成功。请回原支付页点击“我已支付，刷新状态”。");
+      setMessage("支付成功，正在跳转下载页...");
+      window.location.href = `/payment/success?orderNo=${encodeURIComponent(orderNo)}`;
     } catch {
       setMessage("网络异常，请稍后重试。");
     } finally {

@@ -15,6 +15,8 @@ type OrderItem = {
   created_at: string;
   paid_at?: string | null;
   reviewed_note?: string | null;
+  download_claimed?: boolean;
+  download_claim?: { claimed_at: string; platform: string } | null;
 };
 
 type TicketItem = {
@@ -260,12 +262,25 @@ export default function MePage() {
                   <p>套餐：{o.plan} / 金额：¥{o.amount}</p>
                   <p>状态：{o.status}</p>
                   <p>创建时间：{new Date(o.created_at).toLocaleString()}</p>
+                  {o.plan === "auto_49" && o.status === "paid_confirmed" ? (
+                    <p className="text-muted-foreground">
+                      下载状态：
+                      {o.download_claimed
+                        ? `已下载（${o.download_claim?.platform ?? "-"}，${o.download_claim?.claimed_at ? new Date(o.download_claim.claimed_at).toLocaleString() : "-"})`
+                        : "未下载"}
+                    </p>
+                  ) : null}
                   <div className="mt-2">
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/me/orders/${encodeURIComponent(o.order_no)}?email=${encodeURIComponent(email.trim())}`}>
                         查看详情
                       </Link>
                     </Button>
+                    {o.plan === "auto_49" && o.status === "paid_confirmed" && !o.download_claimed ? (
+                      <Button asChild size="sm" className="ml-2">
+                        <Link href={`/download/center?orderNo=${encodeURIComponent(o.order_no)}`}>去下载</Link>
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
               ))}

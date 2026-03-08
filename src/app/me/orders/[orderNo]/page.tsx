@@ -33,7 +33,7 @@ export default function MyOrderDetailPage() {
     if (order.status !== "paid_confirmed") return "等待支付成功后再继续。";
     if (order.plan !== "auto_49") return "该订单为一对一代办，请等待服务处理。";
     if (downloadClaimed) return "脚本已领取过。如需再次下载，请重新购买或联系人工。";
-    return "你现在可以去安装页领取一次脚本并执行安装。";
+    return "你现在可以进入下载页领取一次脚本并执行安装。";
   }, [order, downloadClaimed]);
 
   useEffect(() => {
@@ -84,9 +84,15 @@ export default function MyOrderDetailPage() {
                 <p>脚本领取状态：{downloadClaimed ? "已领取（次数已用完）" : "未领取"}</p>
                 <p className="text-muted-foreground">下一步：{nextAction}</p>
                 <div className="flex flex-wrap gap-2 pt-2">
-                  <Button asChild>
-                    <Link href="/guide/local?paid_auto=1">去安装页</Link>
-                  </Button>
+                  {order.plan === "auto_49" && order.status === "paid_confirmed" && !downloadClaimed ? (
+                    <Button asChild>
+                      <Link href={`/download/center?orderNo=${encodeURIComponent(order.order_no)}`}>去下载页</Link>
+                    </Button>
+                  ) : (
+                    <Button asChild>
+                      <Link href="/guide/local?paid_auto=1">去安装页</Link>
+                    </Button>
+                  )}
                   <Button asChild variant="outline">
                     <Link href="/me">返回我的页面</Link>
                   </Button>

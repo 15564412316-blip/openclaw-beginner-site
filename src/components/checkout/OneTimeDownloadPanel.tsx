@@ -57,7 +57,7 @@ export function OneTimeDownloadPanel() {
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        说明：支付成功后直接点击下载即可。每个订单仅可下载一次，若已下载请重新购买或联系人工。
+        说明：支付成功后会自动进入下载页。每个订单仅可下载一次，若已下载请重新购买或联系人工。
       </p>
       {message && <p className="text-sm">{message}</p>}
     </div>

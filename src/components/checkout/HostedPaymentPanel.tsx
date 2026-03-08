@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,8 @@ export function HostedPaymentPanel({
   const [orderNo, setOrderNo] = useState("");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
+  const [autoChecking, setAutoChecking] = useState(false);
+  const redirectedRef = useRef(false);
 
   const createOrder = async () => {
     if (!email.trim() || !channel) {
@@ -89,15 +91,19 @@ export function HostedPaymentPanel({
       const nextStatus = String(data.status ?? "");
       setStatus(nextStatus);
       if (nextStatus === "paid_confirmed") {
-        setMessage("支付成功，正在跳转...");
-        await fetch("/api/payment/grant-download", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderNo }),
-        });
-        window.location.href = successPath;
+        if (!redirectedRef.current) {
+          redirectedRef.current = true;
+          setMessage("支付成功，正在跳转...");
+          await fetch("/api/payment/grant-download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderNo }),
+          });
+          const connector = successPath.includes("?") ? "&" : "?";
+          window.location.href = `${successPath}${connector}orderNo=${encodeURIComponent(orderNo)}`;
+        }
       } else {
-        setMessage("尚未支付成功，请完成支付后再刷新状态。");
+        setMessage("正在等待支付回调确认...");
       }
     } catch {
       setMessage("网络异常，请稍后重试。");
@@ -105,6 +111,41 @@ export function HostedPaymentPanel({
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!orderNo || redirectedRef.current) return;
+    if (status === "paid_confirmed" || status === "PAID_CONFIRMED") return;
+    let alive = true;
+    setAutoChecking(true);
+    const timer = setInterval(async () => {
+      if (!alive || redirectedRef.current) return;
+      try {
+        const res = await fetch(`/api/payment/status?orderNo=${encodeURIComponent(orderNo)}`);
+        const data = await res.json();
+        if (!res.ok || !data?.ok) return;
+        const nextStatus = String(data.status ?? "");
+        setStatus(nextStatus);
+        if (nextStatus === "paid_confirmed" && !redirectedRef.current) {
+          redirectedRef.current = true;
+          await fetch("/api/payment/grant-download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderNo }),
+          });
+          const connector = successPath.includes("?") ? "&" : "?";
+          window.location.href = `${successPath}${connector}orderNo=${encodeURIComponent(orderNo)}`;
+        }
+      } catch {
+        // Keep polling silently.
+      }
+    }, 2000);
+
+    return () => {
+      alive = false;
+      clearInterval(timer);
+      setAutoChecking(false);
+    };
+  }, [orderNo, status, successPath]);
 
   return (
     <Card className="border-border/50">
@@ -160,12 +201,13 @@ export function HostedPaymentPanel({
             {submitting ? "处理中..." : "创建订单并去支付"}
           </Button>
           <Button onClick={checkStatus} variant="outline" disabled={submitting || !orderNo}>
-            我已支付，刷新状态
+            立即检查支付状态
           </Button>
         </div>
 
         {orderNo && <p className="text-xs text-muted-foreground mt-4">订单号：{orderNo}</p>}
         {status && <p className="text-xs text-muted-foreground mt-1">当前状态：{status}</p>}
+        {autoChecking && <p className="text-xs text-muted-foreground mt-1">状态自动刷新中...</p>}
         {message && <p className="text-sm mt-2">{message}</p>}
         {extraNote && <p className="text-xs text-muted-foreground mt-4">{extraNote}</p>}
       </CardContent>

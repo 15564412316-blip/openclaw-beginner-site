@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const reasonMap: Record<string, string> = {
-  no_grant: "下载权限不存在，请先完成支付并刷新状态后再下载。",
+  no_grant: "下载权限不存在，请先完成支付后从“我的订单”进入下载页。",
   already_used: "该订单下载次数已用完。如需再次下载，请重新购买或联系人工。",
   unpaid: "订单未支付成功，暂不可下载。",
   unknown: "下载失败，请稍后重试。",
