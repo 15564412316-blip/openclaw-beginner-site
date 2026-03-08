@@ -2,6 +2,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 
 $Form = New-Object System.Windows.Forms.Form
 $Form.Text = 'OpenClaw 安装程序'
@@ -96,7 +97,7 @@ function Write-Log([string]$line) {
 function Download-FromMirrors([string[]]$urls, [string]$outFile) {
   foreach ($url in $urls) {
     try {
-      Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $outFile
+      Invoke-WebRequest -UseBasicParsing -TimeoutSec 25 -Uri $url -OutFile $outFile
       if (Test-Path $outFile) {
         return $true
       }
@@ -105,6 +106,97 @@ function Download-FromMirrors([string[]]$urls, [string]$outFile) {
     }
   }
   return $false
+}
+
+function Run-StepProcess {
+  param(
+    [string[]]$Args,
+    [int]$TimeoutSeconds = 1200
+  )
+
+  $stdoutFile = Join-Path $env:TEMP ("openclaw-step-out-" + [guid]::NewGuid().ToString("N") + ".log")
+  $stderrFile = Join-Path $env:TEMP ("openclaw-step-err-" + [guid]::NewGuid().ToString("N") + ".log")
+  $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $startInfo.FileName = "powershell"
+  $startInfo.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$CoreInstaller`" " + ($Args -join " ")
+  $startInfo.UseShellExecute = $false
+  $startInfo.CreateNoWindow = $true
+  $startInfo.RedirectStandardOutput = $true
+  $startInfo.RedirectStandardError = $true
+
+  $proc = New-Object System.Diagnostics.Process
+  $proc.StartInfo = $startInfo
+  $outWriter = [System.IO.File]::CreateText($stdoutFile)
+  $errWriter = [System.IO.File]::CreateText($stderrFile)
+
+  $proc.add_OutputDataReceived({
+    param($sender, $e)
+    if ($null -ne $e.Data) {
+      $outWriter.WriteLine($e.Data)
+      $outWriter.Flush()
+    }
+  })
+  $proc.add_ErrorDataReceived({
+    param($sender, $e)
+    if ($null -ne $e.Data) {
+      $errWriter.WriteLine($e.Data)
+      $errWriter.Flush()
+    }
+  })
+
+  [void]$proc.Start()
+  $proc.BeginOutputReadLine()
+  $proc.BeginErrorReadLine()
+
+  $sw = [System.Diagnostics.Stopwatch]::StartNew()
+  $printedOut = 0
+  $printedErr = 0
+  while (-not $proc.HasExited) {
+    Start-Sleep -Milliseconds 250
+    [System.Windows.Forms.Application]::DoEvents()
+    if ($sw.Elapsed.TotalSeconds -gt $TimeoutSeconds) {
+      try { $proc.Kill() } catch {}
+      throw "步骤超时（>${TimeoutSeconds}s），请检查网络后重试。"
+    }
+
+    if (Test-Path $stdoutFile) {
+      $outLines = Get-Content -Path $stdoutFile -ErrorAction SilentlyContinue
+      if ($outLines.Count -gt $printedOut) {
+        for ($i = $printedOut; $i -lt $outLines.Count; $i++) {
+          Write-Log ("  " + $outLines[$i])
+        }
+        $printedOut = $outLines.Count
+      }
+    }
+    if (Test-Path $stderrFile) {
+      $errLines = Get-Content -Path $stderrFile -ErrorAction SilentlyContinue
+      if ($errLines.Count -gt $printedErr) {
+        for ($i = $printedErr; $i -lt $errLines.Count; $i++) {
+          Write-Log ("  [stderr] " + $errLines[$i])
+        }
+        $printedErr = $errLines.Count
+      }
+    }
+  }
+
+  if (Test-Path $stdoutFile) {
+    $outLines = Get-Content -Path $stdoutFile -ErrorAction SilentlyContinue
+    for ($i = $printedOut; $i -lt $outLines.Count; $i++) {
+      Write-Log ("  " + $outLines[$i])
+    }
+  }
+  if (Test-Path $stderrFile) {
+    $errLines = Get-Content -Path $stderrFile -ErrorAction SilentlyContinue
+    for ($i = $printedErr; $i -lt $errLines.Count; $i++) {
+      Write-Log ("  [stderr] " + $errLines[$i])
+    }
+  }
+
+  try { $outWriter.Close() } catch {}
+  try { $errWriter.Close() } catch {}
+  try { Remove-Item -Force $stdoutFile -ErrorAction SilentlyContinue } catch {}
+  try { Remove-Item -Force $stderrFile -ErrorAction SilentlyContinue } catch {}
+  return $proc.ExitCode
 }
 
 $OpenBtn.Add_Click({
@@ -152,13 +244,10 @@ $StartBtn.Add_Click({
       $step = $steps[$i]
       $StepLabel.Text = "当前状态：$($step.Name)"
       Write-Log "[$($step.Name)] 开始..."
-
-      $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $CoreInstaller @($step.Args) 2>&1
-      if ($output) {
-        $output | ForEach-Object { Write-Log ("  " + $_.ToString()) }
-      }
-      if ($LASTEXITCODE -ne 0) {
-        throw "$($step.Name) 执行失败，退出码 $LASTEXITCODE"
+      $timeout = if ($step.Name -eq '自动安装') { 1800 } else { 600 }
+      $exitCode = Run-StepProcess -Args $step.Args -TimeoutSeconds $timeout
+      if ($exitCode -ne 0) {
+        throw "$($step.Name) 执行失败，退出码 $exitCode"
       }
 
       $Progress.Value = $i + 1

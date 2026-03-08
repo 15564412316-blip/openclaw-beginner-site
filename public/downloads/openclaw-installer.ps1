@@ -12,6 +12,7 @@ param(
 )
 
 $AppName = "openclaw-installer"
+$ProgressPreference = "SilentlyContinue"
 $ConfigDir = Join-Path $HOME ".openclaw"
 $ConfigFile = Join-Path $ConfigDir "openclaw.json"
 $LogDir = Join-Path $HOME ".openclaw-installer"
