@@ -84,6 +84,34 @@ function Require-Command {
   return $false
 }
 
+function Is-WindowsHost {
+  return [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
+}
+
+function Try-Install-WithWinget {
+  param(
+    [string]$PackageId,
+    [string]$Name
+  )
+  $winget = Get-Command winget -ErrorAction SilentlyContinue
+  if ($null -eq $winget) {
+    Add-Check -Name "winget" -Status "FAIL" -Message "winget not found" -Fix "Install App Installer from Microsoft Store"
+    return $false
+  }
+
+  try {
+    & winget install --id $PackageId -e --accept-package-agreements --accept-source-agreements --silent
+    if ($LASTEXITCODE -eq 0) {
+      Add-Check -Name "auto_install_$Name" -Status "PASS" -Message "Installed via winget: $PackageId"
+      return $true
+    }
+  } catch {
+    # Fall through to failed result.
+  }
+  Add-Check -Name "auto_install_$Name" -Status "FAIL" -Message "Failed to install $Name via winget" -Fix "Install $Name manually and rerun"
+  return $false
+}
+
 function Run-Doctor {
   $script:Checks = @()
   Add-Check -Name "os" -Status "PASS" -Message "$([Environment]::OSVersion.VersionString)"
@@ -112,6 +140,19 @@ function Run-Doctor {
 function Run-Install {
   $script:Checks = @()
   Add-Check -Name "target_dir" -Status "PASS" -Message $Dir
+
+  $hasNode = $null -ne (Get-Command node -ErrorAction SilentlyContinue)
+  $hasNpm = $null -ne (Get-Command npm -ErrorAction SilentlyContinue)
+  $hasGit = $null -ne (Get-Command git -ErrorAction SilentlyContinue)
+
+  if (Is-WindowsHost) {
+    if (-not ($hasNode -and $hasNpm)) {
+      [void](Try-Install-WithWinget -PackageId "OpenJS.NodeJS.LTS" -Name "nodejs")
+    }
+    if (-not $hasGit) {
+      [void](Try-Install-WithWinget -PackageId "Git.Git" -Name "git")
+    }
+  }
 
   $okNode = Require-Command -Name "node" -Fix "Install Node.js LTS first (https://nodejs.org)"
   $okNpm = Require-Command -Name "npm" -Fix "Install npm with Node.js"

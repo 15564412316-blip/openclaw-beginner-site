@@ -48,5 +48,7 @@ powershell -ExecutionPolicy Bypass -File scripts/build-win-exe.ps1
 
 ## 注意
 
-- 由于未做代码签名，Windows SmartScreen 可能显示“未验证发布者”，用户需选择“仍要运行”。
-- 正式商用建议增加代码签名证书，减少安全提示和拦截。
+- 由于未做代码签名，Windows SmartScreen 可能显示“未验证发布者”，部分机器会拦截或提示删除。
+- 正式商用建议购买代码签名证书（OV/EV）并对 EXE 签名：
+  - 先签名再发布，可显著减少“高风险/未知发布者”提示。
+  - EV 证书在 SmartScreen 信任建立上通常更快。

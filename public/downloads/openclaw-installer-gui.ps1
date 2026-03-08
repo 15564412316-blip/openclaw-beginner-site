@@ -57,22 +57,16 @@ $StartBtn.Location = New-Object System.Drawing.Point(22, 476)
 $StartBtn.Size = New-Object System.Drawing.Size(120, 34)
 $Form.Controls.Add($StartBtn)
 
-$GuideBtn = New-Object System.Windows.Forms.Button
-$GuideBtn.Text = '下载后续指南'
-$GuideBtn.Location = New-Object System.Drawing.Point(152, 476)
-$GuideBtn.Size = New-Object System.Drawing.Size(120, 34)
-$Form.Controls.Add($GuideBtn)
-
 $OpenBtn = New-Object System.Windows.Forms.Button
 $OpenBtn.Text = '打开安装目录'
-$OpenBtn.Location = New-Object System.Drawing.Point(282, 476)
+$OpenBtn.Location = New-Object System.Drawing.Point(152, 476)
 $OpenBtn.Size = New-Object System.Drawing.Size(120, 34)
 $OpenBtn.Enabled = $false
 $Form.Controls.Add($OpenBtn)
 
 $SaveReportBtn = New-Object System.Windows.Forms.Button
 $SaveReportBtn.Text = '保存安装报告'
-$SaveReportBtn.Location = New-Object System.Drawing.Point(412, 476)
+$SaveReportBtn.Location = New-Object System.Drawing.Point(282, 476)
 $SaveReportBtn.Size = New-Object System.Drawing.Size(120, 34)
 $SaveReportBtn.Enabled = $false
 $Form.Controls.Add($SaveReportBtn)
@@ -91,10 +85,6 @@ $ScriptUrls = @{
   CoreInstaller = @(
     'https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-installer.ps1',
     'https://cdn.jsdelivr.net/gh/15564412316-blip/openclaw-beginner-site@main/public/downloads/openclaw-installer.ps1'
-  )
-  OpsGuide = @(
-    'https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-ops-guide.txt',
-    'https://cdn.jsdelivr.net/gh/15564412316-blip/openclaw-beginner-site@main/public/downloads/openclaw-ops-guide.txt'
   )
 }
 
@@ -116,21 +106,6 @@ function Download-FromMirrors([string[]]$urls, [string]$outFile) {
   }
   return $false
 }
-
-function Download-Guide {
-  try {
-    $dst = Join-Path $env:USERPROFILE 'Desktop\\openclaw-ops-guide.txt'
-    $ok = Download-FromMirrors -urls $ScriptUrls.OpsGuide -outFile $dst
-    if (-not $ok) {
-      throw '网络异常，无法下载后续指南。'
-    }
-    [System.Windows.Forms.MessageBox]::Show("后续指南已保存到桌面：openclaw-ops-guide.txt", '完成') | Out-Null
-  } catch {
-    [System.Windows.Forms.MessageBox]::Show("下载后续指南失败：$($_.Exception.Message)", '错误') | Out-Null
-  }
-}
-
-$GuideBtn.Add_Click({ Download-Guide })
 
 $OpenBtn.Add_Click({
   if (Test-Path $InstallDir) {
