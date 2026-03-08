@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabaseAdmin";
 import { cookies } from "next/headers";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 type Payload = {
   platform?: "mac" | "win" | string;
@@ -81,10 +83,13 @@ export async function POST(req: Request) {
       throw claimErr;
     }
 
-    const fileUrl =
-      platform === "mac"
-        ? "/downloads/openclaw-oneclick-macos.command"
+    let fileUrl = "/downloads/openclaw-oneclick-macos.command";
+    if (platform === "win") {
+      const exePath = join(process.cwd(), "public", "downloads", "openclaw-installer-setup.exe");
+      fileUrl = existsSync(exePath)
+        ? "/downloads/openclaw-installer-setup.exe"
         : "/downloads/openclaw-windows-installer-v2.zip";
+    }
 
     const res = NextResponse.json(
       { ok: true, fileUrl, orderNo, platform },

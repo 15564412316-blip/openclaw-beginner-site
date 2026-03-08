@@ -53,11 +53,11 @@ export function OneTimeDownloadPanel() {
           下载 macOS 一键安装器（一次）
         </Button>
         <Button variant="outline" disabled={loading} onClick={() => claim("win")}>
-          下载 Windows 安装包（zip，一次）
+          下载 Windows 可视化安装器（EXE/ZIP，一次）
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        说明：Windows 请先解压 zip，再双击 `openclaw-oneclick-windows.bat`。每个订单仅可下载一次。
+        说明：优先提供 EXE。若当前为 ZIP，请先解压后双击 `openclaw-oneclick-windows.bat`。
       </p>
       {message && <p className="text-sm">{message}</p>}
     </div>

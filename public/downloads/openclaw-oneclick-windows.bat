@@ -4,11 +4,18 @@ chcp 65001 >nul
 
 set "PS_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 set "TMP_GUI=%TEMP%\openclaw-installer-gui.ps1"
+set "LOCAL_EXE=%~dp0openclaw-installer-setup.exe"
 set "LOCAL_GUI=%~dp0openclaw-installer-gui.ps1"
 set "URL_MAIN=https://raw.githubusercontent.com/15564412316-blip/openclaw-beginner-site/main/public/downloads/openclaw-installer-gui.ps1"
 set "URL_MIRROR=https://cdn.jsdelivr.net/gh/15564412316-blip/openclaw-beginner-site@main/public/downloads/openclaw-installer-gui.ps1"
 
 echo 正在启动 OpenClaw 可视化安装程序...
+if exist "%LOCAL_EXE%" (
+  echo 检测到本地 EXE，直接启动...
+  start "" "%LOCAL_EXE%"
+  exit /b 0
+)
+
 if exist "%LOCAL_GUI%" (
   echo 检测到本地安装器，直接启动...
   "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%LOCAL_GUI%"
