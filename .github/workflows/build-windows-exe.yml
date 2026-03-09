@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: openclaw-installer-setup
-          path: public/downloads/openclaw-installer-setup.exe
+          path: public/downloads/openclaw-installer-setup-v2.exe
 
       - name: Publish Release Asset
         uses: softprops/action-gh-release@v2
@@ -36,4 +36,4 @@ jobs:
           name: OpenClaw Installer Latest
           make_latest: false
           files: |
-            public/downloads/openclaw-installer-setup.exe
+            public/downloads/openclaw-installer-setup-v2.exe

@@ -380,7 +380,7 @@ export default function LocalInstallPage() {
                       </a>
                     </Button>
                     <Button asChild variant="outline">
-                      <a href="https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup.exe">
+                      <a href="https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup-v2.exe">
                         下载 Windows EXE 安装器
                       </a>
                     </Button>

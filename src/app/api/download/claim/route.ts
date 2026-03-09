@@ -9,7 +9,7 @@ type Payload = {
 };
 
 const DEFAULT_WIN_EXE_URL =
-  "https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup.exe";
+  "https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup-v2.exe";
 
 export async function POST(req: Request) {
   try {
@@ -89,11 +89,14 @@ export async function POST(req: Request) {
     let fileUrl = "/downloads/openclaw-oneclick-macos.command";
     if (platform === "win") {
       const remoteExe = (process.env.WIN_INSTALLER_EXE_URL ?? "").trim() || DEFAULT_WIN_EXE_URL;
-      const exePath = join(process.cwd(), "public", "downloads", "openclaw-installer-setup.exe");
+      const exePathV2 = join(process.cwd(), "public", "downloads", "openclaw-installer-setup-v2.exe");
+      const exePathV1 = join(process.cwd(), "public", "downloads", "openclaw-installer-setup.exe");
       if (remoteExe) {
         fileUrl = remoteExe;
       } else {
-        fileUrl = existsSync(exePath)
+        fileUrl = existsSync(exePathV2)
+          ? "/downloads/openclaw-installer-setup-v2.exe"
+          : existsSync(exePathV1)
           ? "/downloads/openclaw-installer-setup.exe"
           : "/downloads/openclaw-windows-installer-v2.zip";
       }

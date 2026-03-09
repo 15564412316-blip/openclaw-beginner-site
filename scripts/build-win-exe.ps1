@@ -1,6 +1,6 @@
 param(
   [string]$Source = "public/downloads/openclaw-installer-gui.ps1",
-  [string]$Output = "public/downloads/openclaw-installer-setup.exe",
+  [string]$Output = "public/downloads/openclaw-installer-setup-v2.exe",
   [string]$ProductName = "OpenClaw Installer"
 )
 

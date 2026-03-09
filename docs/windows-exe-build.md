@@ -18,7 +18,7 @@
 
 建议在生产环境配置：
 
-- `WIN_INSTALLER_EXE_URL=https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup.exe`
+- `WIN_INSTALLER_EXE_URL=https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup-v2.exe`
 
 这样终端用户支付后会直接下载 EXE，不需要任何命令操作。
 
