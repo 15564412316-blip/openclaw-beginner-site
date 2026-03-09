@@ -28,7 +28,7 @@ export default async function HomePage({ searchParams }: Props) {
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-10">
         <section className="text-center">
-          <p className="text-sm text-primary mb-2">OpenClaw Windows 稳定安装引导</p>
+          <p className="text-sm text-primary mb-2">OpenClaw 安装引导（Windows + Mac）</p>
           <h1 className="text-3xl sm:text-5xl font-bold mb-4">
             {copy.title}
           </h1>
@@ -40,7 +40,10 @@ export default async function HomePage({ searchParams }: Props) {
               <Link href="/pricing">{copy.cta}</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/install">先看安装总览</Link>
+              <Link href="/install">Windows：看安装总览</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/guide/local?system=macos">Mac：继续原安装方案</Link>
             </Button>
           </div>
         </section>
@@ -51,6 +54,14 @@ export default async function HomePage({ searchParams }: Props) {
               <h2 className="font-semibold mb-2">适合谁</h2>
               <p className="text-sm text-muted-foreground">
                 适合想快速装好 OpenClaw、但不想在原生 Windows 环境里反复踩坑的用户。
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-border/50">
+            <CardContent className="p-6">
+              <h2 className="font-semibold mb-2">Mac 用户</h2>
+              <p className="text-sm text-muted-foreground">
+                Mac 路线保持原方案不变，可直接按你熟悉的本地部署教程继续安装。
               </p>
             </CardContent>
           </Card>
@@ -73,7 +84,7 @@ export default async function HomePage({ searchParams }: Props) {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold mb-4">安装流程总览（9 步）</h2>
+          <h2 className="text-2xl font-bold mb-4">Windows 安装流程总览（9 步）</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground">
             <p>1. 检查 Windows 版本</p>
             <p>2. 安装 WSL2</p>
@@ -86,9 +97,14 @@ export default async function HomePage({ searchParams }: Props) {
             <p>9. 后续启动与常见问题</p>
           </div>
           <div className="mt-4">
-            <Button asChild variant="outline">
-              <Link href="/faq">查看常见问题</Link>
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <Link href="/faq">查看常见问题</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/guide/local?system=macos">Mac 用户直接进入原教程</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </div>

@@ -16,40 +16,58 @@ export default async function PricingPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2 text-center">49.9 元 / 次</h1>
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-2 text-center">安装方案与价格</h1>
         <p className="text-muted-foreground text-center mb-8">
           {intro}
         </p>
 
-        <Card className="border-primary/30 ring-1 ring-primary/20">
-          <CardContent className="p-6 space-y-4">
-            <h2 className="text-xl font-semibold">包含内容</h2>
-            <div className="text-sm text-muted-foreground space-y-2">
-              <p>• Windows -&gt; WSL2 -&gt; Ubuntu 的完整安装路径</p>
-              <p>• 分步骤引导页面（每步都有目的、操作、成功标志、常见问题）</p>
-              <p>• API Key 配置说明</p>
-              <p>• 首次任务模板</p>
-              <p>• 安装后启动与使用说明</p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="border-primary/30 ring-1 ring-primary/20">
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-xl font-semibold">Windows 稳定引导（49.9）</h2>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>• Windows -&gt; WSL2 -&gt; Ubuntu 的完整安装路径</p>
+                <p>• 分步骤引导页面（每步都有目的、操作、成功标志、常见问题）</p>
+                <p>• API Key 配置说明</p>
+                <p>• 首次任务模板</p>
+                <p>• 安装后启动与使用说明</p>
+              </div>
 
-            <h3 className="text-base font-semibold pt-2">不包含内容</h3>
-            <div className="text-sm text-muted-foreground space-y-2">
-              <p>• 不承诺原生 Windows 全自动一键成功</p>
-              <p>• 不代买 API Key，不托管用户 Key</p>
-              <p>• 不承诺无限售后</p>
-            </div>
+              <h3 className="text-base font-semibold pt-2">不包含内容</h3>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>• 不承诺原生 Windows 全自动一键成功</p>
+                <p>• 不代买 API Key，不托管用户 Key</p>
+                <p>• 不承诺无限售后</p>
+              </div>
 
-            <div className="pt-2 flex flex-wrap gap-2">
-              <Button asChild>
-                <Link href="/checkout">立即开通 49.9 引导</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/faq">先看 FAQ</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="pt-2 flex flex-wrap gap-2">
+                <Button asChild>
+                  <Link href="/checkout">立即开通 49.9 引导</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/faq">先看 FAQ</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50">
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-xl font-semibold">Mac 原方案（保持不变）</h2>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>• 继续使用原有 Mac 本地安装教程</p>
+                <p>• 不改变你当前的操作习惯</p>
+                <p>• 按原步骤可直接执行</p>
+              </div>
+              <div className="pt-2 flex flex-wrap gap-2">
+                <Button asChild variant="outline">
+                  <Link href="/guide/local?system=macos">进入 Mac 原教程</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

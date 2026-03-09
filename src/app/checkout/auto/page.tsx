@@ -10,6 +10,9 @@ export default function CheckoutAutoPage() {
         <p className="text-muted-foreground mb-6 text-center">
           不是原生 Windows 强行一键。支付后进入 WSL2 + Ubuntu 分步引导流程。
         </p>
+        <p className="text-xs text-muted-foreground text-center mb-6">
+          说明：Mac 方案保持原教程不变，可直接从首页或价格页进入。
+        </p>
 
         <HostedPaymentPanel
           plan="auto_49"

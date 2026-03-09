@@ -20,7 +20,13 @@ export function Header() {
             href="/install"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            安装向导
+            Windows 向导
+          </Link>
+          <Link
+            href="/guide/local?system=macos"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Mac 原教程
           </Link>
           <Link
             href="/first-task"
