@@ -82,7 +82,7 @@ const stepDetails: Record<string, { title: string; content: ReactNode }> = {
               <p className="font-medium text-sm">Windows 用户</p>
               <ol className="text-sm text-muted-foreground mt-2 list-decimal list-inside">
                 <li>访问 nodejs.org</li>
-                <li>下载 Windows EXE 安装器</li>
+                <li>下载 Windows 安装向导</li>
                 <li>运行安装程序并按默认选项完成安装</li>
                 <li>重启电脑后，在终端输入 <code className="text-xs bg-background px-2 py-1 rounded">node --version</code> 验证</li>
               </ol>
@@ -380,13 +380,13 @@ export default function LocalInstallPage() {
                       </a>
                     </Button>
                     <Button asChild variant="outline">
-                      <a href="https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-setup-v2.exe">
-                        下载 Windows EXE 安装器
+                      <a href="https://github.com/15564412316-blip/openclaw-beginner-site/releases/download/installer-latest/openclaw-installer-inno-v1.exe">
+                        下载 Windows 安装向导（Inno）
                       </a>
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Windows：直接双击 EXE 即可安装，不需要手动输入任何命令。
+                    Windows：双击安装向导，按向导完成安装并启动，不需要手动输入命令。
                   </p>
                 </div>
 

@@ -1,0 +1,41 @@
+name: Build Windows Installer (Inno Setup)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "installer/windows/**"
+      - "public/downloads/openclaw-installer.ps1"
+      - "public/downloads/openclaw-ops-guide.txt"
+      - ".github/workflows/build-windows-installer-inno.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Inno Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: installer/windows/OpenClawInstaller.iss
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openclaw-installer-inno
+          path: installer/windows/dist/openclaw-installer-inno-v1.exe
+
+      - name: Publish Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: installer-latest
+          name: OpenClaw Installer Latest
+          make_latest: false
+          files: |
+            installer/windows/dist/openclaw-installer-inno-v1.exe

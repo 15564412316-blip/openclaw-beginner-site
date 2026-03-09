@@ -53,11 +53,11 @@ export function OneTimeDownloadPanel() {
           下载 macOS 一键安装器（一次）
         </Button>
         <Button variant="outline" disabled={loading} onClick={() => claim("win")}>
-          下载 Windows 可视化安装器（EXE，一次）
+          下载 Windows 安装向导（Inno EXE，一次）
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        说明：Windows 付费后直接下载 EXE 并双击运行，无需命令行。
+        说明：Windows 付费后直接下载 Inno 安装向导并双击运行，无需命令行。
       </p>
       {message && <p className="text-sm">{message}</p>}
     </div>
