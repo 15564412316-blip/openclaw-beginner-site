@@ -11,16 +11,28 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <span className="text-xl font-bold text-primary">OpenClaw</span>
-          <span className="text-sm text-muted-foreground">新手指南</span>
+          <span className="text-sm text-muted-foreground">稳定安装引导</span>
         </Link>
 
         {/* 导航链接 */}
         <nav className="hidden md:flex items-center space-x-6">
           <Link
-            href="/guide"
+            href="/install"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            使用指南
+            安装向导
+          </Link>
+          <Link
+            href="/first-task"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            首次任务
+          </Link>
+          <Link
+            href="/api-key"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            API 配置
           </Link>
           <Link
             href="/faq"
@@ -29,16 +41,10 @@ export function Header() {
             常见问题
           </Link>
           <Link
-            href="/about"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            关于我们
-          </Link>
-          <Link
             href="/pricing"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            价格
+            49.9 开通
           </Link>
         </nav>
 
@@ -50,11 +56,8 @@ export function Header() {
           <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
             <Link href="/login">登录</Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="hidden sm:flex">
-            <Link href="/tasks">装完能做什么</Link>
-          </Button>
           <Button asChild size="sm">
-            <Link href="/guide/local">开始安装</Link>
+            <Link href="/pricing">立即开通</Link>
           </Button>
         </div>
       </div>
