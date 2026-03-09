@@ -35,14 +35,15 @@ export function InstallStepTemplate({ step, index, total }: Props) {
             </p>
             <h1 className="text-2xl font-semibold mb-2">{step.title}</h1>
             <p className="text-sm text-muted-foreground">{step.goal}</p>
-            <p className="text-xs text-muted-foreground mt-2">你现在就在这一步，做完再去下一步。</p>
           </CardContent>
         </Card>
 
-        <Card className="border-border/50">
+        <Card className="border-primary/40 bg-primary/5">
           <CardContent className="p-6">
-            <h2 className="text-lg font-semibold mb-2">这一步做什么</h2>
-            <p className="text-sm text-muted-foreground">{step.goal}</p>
+            <h2 className="text-xl font-semibold mb-2">先做这一步（最重要）</h2>
+            <p className="text-sm text-muted-foreground mb-3">
+              目标：{step.goal}
+            </p>
             {step.terminalHint ? (
               <div className="mt-4 p-3 rounded-md bg-secondary/50 text-sm">
                 终端怎么开：{step.terminalHint}
@@ -53,12 +54,6 @@ export function InstallStepTemplate({ step, index, total }: Props) {
                 打开路径：{step.pathHint}
               </div>
             ) : null}
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/50">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold mb-3">按顺序实操</h2>
             <div className="space-y-2 text-sm text-muted-foreground">
               {step.actions.map((a, idx) => (
                 <p key={a}>
