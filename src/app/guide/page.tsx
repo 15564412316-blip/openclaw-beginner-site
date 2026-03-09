@@ -87,7 +87,16 @@ export default function GuidePage() {
     });
     return `/guide/local?${params.toString()}`;
   }, [answers]);
+  const windowsGuideLink = useMemo(() => {
+    const params = new URLSearchParams({
+      system: answers.system ?? "",
+      level: answers.level ?? "",
+      priority: answers.priority ?? "",
+    });
+    return `/install?${params.toString()}`;
+  }, [answers]);
   const isCloudPreference = answers.priority === "online";
+  const isWindows = answers.system === "windows";
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -179,12 +188,18 @@ export default function GuidePage() {
 
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold mb-2">
-                      {isCloudPreference ? "云端部署（敬请期待）" : "本地部署（推荐）"}
+                      {isCloudPreference
+                        ? "云端部署（敬请期待）"
+                        : isWindows
+                          ? "Windows 稳定引导路径（推荐）"
+                          : "Mac 本地部署路径（保持原方案）"}
                     </h3>
                     <p className="text-muted-foreground mb-4">
                       {isCloudPreference
                         ? "你选择了长期在线运行。云端部署能力正在完善中，当前可先使用本地部署。"
-                        : "你当前阶段最适合先在本地跑通 OpenClaw，后续再考虑云端方案。"}
+                        : isWindows
+                          ? "你将进入 Windows -> WSL2 -> Ubuntu 的分步引导，目标是更高成功率。"
+                          : "你将进入 Mac 原教程，按原有方案继续，不改变你当前习惯。"}
                     </p>
 
                     <p className="text-sm text-muted-foreground mb-4">
@@ -211,8 +226,8 @@ export default function GuidePage() {
                       </div>
                     ) : (
                       <Button asChild className="gap-2">
-                        <a href={localGuideLink}>
-                          打开本地部署教程
+                        <a href={isWindows ? windowsGuideLink : localGuideLink}>
+                          {isWindows ? "打开 Windows 分步引导" : "打开 Mac 原教程"}
                           <ArrowRight className="w-4 h-4" />
                         </a>
                       </Button>

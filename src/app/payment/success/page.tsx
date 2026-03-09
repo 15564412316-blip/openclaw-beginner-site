@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button";
 export default function PaymentSuccessPage() {
   const params = useSearchParams();
   const orderNo = (params.get("orderNo") ?? "").trim();
-  const [message, setMessage] = useState("支付成功，正在跳转安装总览...");
+  const [message, setMessage] = useState("支付成功，正在跳转系统引导...");
 
   useEffect(() => {
     const run = async () => {
       try {
         if (orderNo) {
-          window.location.href = `/install?orderNo=${encodeURIComponent(orderNo)}`;
+          window.location.href = `/guide?paid=1&orderNo=${encodeURIComponent(orderNo)}`;
           return;
         }
-        window.location.href = "/install";
+        window.location.href = "/guide?paid=1";
       } catch {
         setMessage("跳转失败，请点击下方按钮继续。");
       }
@@ -32,8 +32,8 @@ export default function PaymentSuccessPage() {
         <p className="text-muted-foreground mb-6">{message}</p>
         <div className="flex flex-wrap justify-center gap-3">
           <Button asChild>
-            <Link href={orderNo ? `/install?orderNo=${encodeURIComponent(orderNo)}` : "/install"}>
-              继续去安装向导
+            <Link href={orderNo ? `/guide?paid=1&orderNo=${encodeURIComponent(orderNo)}` : "/guide?paid=1"}>
+              继续去系统引导
             </Link>
           </Button>
           <Button asChild variant="outline">

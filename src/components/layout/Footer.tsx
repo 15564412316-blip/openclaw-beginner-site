@@ -7,26 +7,20 @@ export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="container px-4 py-8 mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm">
           <div>
-            <p className="font-semibold">OpenClaw 稳定安装引导</p>
-            <p className="text-sm text-muted-foreground">49.9 元 / 次，目标是让你真正装好并跑通。</p>
+            <p className="font-semibold">OpenClaw 安装引导（49.9 元 / 次）</p>
+            <p className="text-muted-foreground">先选系统，再给你对应的安装路径。</p>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex flex-wrap gap-4">
+            <Link href="/guide" className="text-muted-foreground hover:text-foreground transition-colors">
+              立即安装
+            </Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              开通服务
-            </Link>
-            <Link href="/install" className="text-muted-foreground hover:text-foreground transition-colors">
-              Windows 向导
-            </Link>
-            <Link href="/guide/local?system=macos" className="text-muted-foreground hover:text-foreground transition-colors">
-              Mac 原教程
+              价格说明
             </Link>
             <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
               常见问题
-            </Link>
-            <Link href="/support" className="text-muted-foreground hover:text-foreground transition-colors">
-              联系支持
             </Link>
           </div>
         </div>

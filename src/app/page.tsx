@@ -28,22 +28,20 @@ export default async function HomePage({ searchParams }: Props) {
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-10">
         <section className="text-center">
-          <p className="text-sm text-primary mb-2">OpenClaw 安装引导（Windows + Mac）</p>
+          <p className="text-sm text-primary mb-2">OpenClaw 安装引导服务</p>
           <h1 className="text-3xl sm:text-5xl font-bold mb-4">
             {copy.title}
           </h1>
           <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
-            {copy.subtitle}
+            不管你是 Windows 还是 Mac，先告诉我们你的情况，再给你对应方案。
+            {variant === "b" ? " " + copy.subtitle : ""}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link href="/pricing">{copy.cta}</Link>
+              <Link href="/guide">立即安装</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/install">Windows：看安装总览</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/guide/local?system=macos">Mac：继续原安装方案</Link>
+              <Link href="/pricing">查看 49.9 服务说明</Link>
             </Button>
           </div>
         </section>
@@ -53,23 +51,23 @@ export default async function HomePage({ searchParams }: Props) {
             <CardContent className="p-6">
               <h2 className="font-semibold mb-2">适合谁</h2>
               <p className="text-sm text-muted-foreground">
-                适合想快速装好 OpenClaw、但不想在原生 Windows 环境里反复踩坑的用户。
+                适合想把 OpenClaw 真正装好、并且愿意按步骤操作的用户。
               </p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="p-6">
-              <h2 className="font-semibold mb-2">Mac 用户</h2>
+              <h2 className="font-semibold mb-2">支持系统</h2>
               <p className="text-sm text-muted-foreground">
-                Mac 路线保持原方案不变，可直接按你熟悉的本地部署教程继续安装。
+                Windows 与 Mac 都支持。先在引导页选择系统，再进入对应安装路径。
               </p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="p-6">
-              <h2 className="font-semibold mb-2">为什么是 WSL2</h2>
+              <h2 className="font-semibold mb-2">核心目标</h2>
               <p className="text-sm text-muted-foreground">
-                原生 Windows 变量太多。WSL2 + Ubuntu 更接近 Linux 环境，稳定性更高，失败率更低。
+                不是追求炫酷自动化，而是让你以更高成功率完成安装并跑通首次任务。
               </p>
             </CardContent>
           </Card>
@@ -84,25 +82,25 @@ export default async function HomePage({ searchParams }: Props) {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold mb-4">Windows 安装流程总览（9 步）</h2>
+          <h2 className="text-2xl font-bold mb-4">你会得到什么</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground">
-            <p>1. 检查 Windows 版本</p>
-            <p>2. 安装 WSL2</p>
-            <p>3. 安装 Ubuntu</p>
-            <p>4. 初始化 Ubuntu</p>
-            <p>5. 验证 Linux 环境</p>
-            <p>6. 安装 OpenClaw</p>
-            <p>7. 配置 Provider / API Key</p>
-            <p>8. 运行首次任务</p>
-            <p>9. 后续启动与常见问题</p>
+            <p>1. 先做系统与难度选择</p>
+            <p>2. 进入对应系统的分步方案</p>
+            <p>3. 每一步有目的和操作说明</p>
+            <p>4. 每一步有成功标志</p>
+            <p>5. 每一步有常见报错解释</p>
+            <p>6. API Key 配置说明</p>
+            <p>7. 首次任务模板</p>
+            <p>8. 后续启动方式</p>
+            <p>9. 整体交付可跑通</p>
           </div>
           <div className="mt-4">
             <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline">
-                <Link href="/faq">查看常见问题</Link>
+              <Button asChild>
+                <Link href="/guide">现在开始引导</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/guide/local?system=macos">Mac 用户直接进入原教程</Link>
+                <Link href="/faq">查看常见问题</Link>
               </Button>
             </div>
           </div>
