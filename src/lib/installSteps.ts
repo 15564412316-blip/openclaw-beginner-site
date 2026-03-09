@@ -10,6 +10,7 @@ export type InstallStep = {
   commands?: string[];
   successSignals: string[];
   failSignals: string[];
+  taskTemplates?: { title: string; prompt: string }[];
   nextSlug?: string;
 };
 
@@ -87,36 +88,28 @@ export const INSTALL_STEPS: InstallStep[] = [
     ],
     successSignals: ["npm install 执行完成且没有中断错误。", "目录中已出现 node_modules。"],
     failSignals: ["git clone 失败。", "npm install 报错并停止。"],
-    nextSlug: "api-setup",
-  },
-  {
-    slug: "api-setup",
-    shortTitle: "配置 API Key",
-    title: "Step 5：配置 Provider / API Key",
-    goal: "让 OpenClaw 具备调用模型的能力。",
-    why: "没有 Key，OpenClaw 无法真正跑任务。",
-    actions: [
-      "先去模型平台申请 API Key。",
-      "按 API 配置页说明写入配置。",
-      "完成后回到终端做一次简单测试。",
-    ],
-    successSignals: ["配置保存成功。", "测试调用返回正常结果。"],
-    failSignals: ["认证失败/Key 无效。", "调用超时或没有返回。"],
     nextSlug: "first-task",
   },
   {
     slug: "first-task",
-    shortTitle: "首次任务 + 启动",
-    title: "Step 6：跑通首次任务并记录后续启动方式",
-    goal: "确认你已经真正可用，而不是只安装了一半。",
-    why: "能跑出结果，才算交付完成。",
+    shortTitle: "首次任务模板",
+    title: "Step 5：直接跑首次任务模板（安装收尾）",
+    goal: "安装完成后先跑一个任务，确认已经真正可用。",
+    why: "先跑通再优化。API Key 教程可后续按需配置，不作为必须步骤。",
     actions: [
-      "从首次任务模板里挑一个最简单任务。",
-      "执行并确认有结果输出。",
-      "把后续启动命令保存起来，方便下次直接用。",
+      "先在 OpenClaw 默认模型下，选一个最简单模板。",
+      "复制模板提示词，直接运行一次。",
+      "确认有结果输出后，再按需去 API 教程页升级模型能力。",
     ],
-    successSignals: ["你已经跑通至少一个任务。", "你知道下次怎么启动。"],
-    failSignals: ["任务没有任何输出。", "不知道下次怎么启动。"],
+    successSignals: ["至少一个模板任务有输出结果。", "你知道下次从哪里继续使用。"],
+    failSignals: ["任务没有任何输出。", "输出为空或明显异常。"],
+    taskTemplates: [
+      { title: "总结网页", prompt: "请帮我总结这个网页的核心观点，输出 5 条要点。" },
+      { title: "整理文件", prompt: "请按主题整理这个文件夹，并给出重命名建议。" },
+      { title: "生成内容草稿", prompt: "请基于这个主题输出一份 800 字中文草稿，语气专业但通俗。" },
+      { title: "文本分类", prompt: "把这批文本按“咨询/投诉/建议/其他”分类，并给出理由。" },
+      { title: "文档转结构化表格", prompt: "把文档中的关键信息提取成表格字段：标题、时间、负责人、动作项。" },
+    ],
   },
 ];
 

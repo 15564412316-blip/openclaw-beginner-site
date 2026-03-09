@@ -10,7 +10,7 @@ export default function InstallOverviewPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Windows 安装总览（简化版）</h1>
           <p className="text-muted-foreground">
-            一共 6 步。每一步都只有：怎么做、复制命令、成功/失败对比、下一步。
+            一共 {INSTALL_STEPS.length} 步。每一步都只有：怎么做、复制命令、成功/失败对比、下一步。
           </p>
         </div>
 

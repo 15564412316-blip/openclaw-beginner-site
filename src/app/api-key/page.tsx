@@ -9,7 +9,7 @@ export default function APIKeyPage() {
         <div>
           <h1 className="text-3xl font-bold mb-2">模型接入配置（API Key）</h1>
           <p className="text-muted-foreground">
-            这一步发生在安装成功之后。没有 API Key，OpenClaw 不能真正调用模型。
+            这是安装后的进阶配置，不是核心安装必做步骤。需要更强模型能力时再配置即可。
           </p>
         </div>
 

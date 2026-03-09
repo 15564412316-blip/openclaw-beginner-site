@@ -114,6 +114,28 @@ export function InstallStepTemplate({ step, index, total }: Props) {
           </CardContent>
         </Card>
 
+        {step.taskTemplates && step.taskTemplates.length > 0 ? (
+          <Card className="border-border/50">
+            <CardContent className="p-6">
+              <h2 className="text-lg font-semibold mb-2">首次任务模板（直接可用）</h2>
+              <p className="text-xs text-muted-foreground mb-3">
+                复制任意一个模板先跑通，后续再决定是否配置 API Key。
+              </p>
+              <div className="space-y-3">
+                {step.taskTemplates.map((tpl) => (
+                  <div key={tpl.title} className="rounded-md border p-3">
+                    <p className="font-medium text-sm mb-2">{tpl.title}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{tpl.prompt}</p>
+                    <Button size="sm" variant="outline" onClick={() => copyCmd(tpl.prompt)}>
+                      {copiedCommand === tpl.prompt ? "已复制" : "复制模板"}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link href="/install">返回总览</Link>
@@ -124,7 +146,7 @@ export function InstallStepTemplate({ step, index, total }: Props) {
             </Button>
           ) : (
             <Button asChild>
-              <Link href="/first-task">去首次任务模板</Link>
+              <Link href="/install">完成安装流程</Link>
             </Button>
           )}
         </div>
