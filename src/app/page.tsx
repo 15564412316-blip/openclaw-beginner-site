@@ -85,14 +85,14 @@ export default async function HomePage({ searchParams }: Props) {
           <h2 className="text-2xl font-bold mb-4">你会得到什么</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground">
             <p>1. 先做系统与难度选择</p>
-            <p>2. 进入对应系统的分步方案</p>
-            <p>3. 每一步有目的和操作说明</p>
-            <p>4. 每一步有成功标志</p>
-            <p>5. 每一步有常见报错解释</p>
+            <p>2. Windows 路径已压缩为 6 步</p>
+            <p>3. 每一步有实操步骤</p>
+            <p>4. 每一步有复制命令按钮</p>
+            <p>5. 每一步有成功/失败对比</p>
             <p>6. API Key 配置说明</p>
             <p>7. 首次任务模板</p>
             <p>8. 后续启动方式</p>
-            <p>9. 整体交付可跑通</p>
+            <p>9. 目标是让你真正跑通</p>
           </div>
           <div className="mt-4">
             <div className="flex flex-wrap gap-2">
