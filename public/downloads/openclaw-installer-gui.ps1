@@ -116,37 +116,13 @@ function Run-StepProcess {
 
   $stdoutFile = Join-Path $env:TEMP ("openclaw-step-out-" + [guid]::NewGuid().ToString("N") + ".log")
   $stderrFile = Join-Path $env:TEMP ("openclaw-step-err-" + [guid]::NewGuid().ToString("N") + ".log")
-  $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-  $startInfo.FileName = "powershell"
-  $startInfo.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$CoreInstaller`" " + ($Args -join " ")
-  $startInfo.UseShellExecute = $false
-  $startInfo.CreateNoWindow = $true
-  $startInfo.RedirectStandardOutput = $true
-  $startInfo.RedirectStandardError = $true
-
-  $proc = New-Object System.Diagnostics.Process
-  $proc.StartInfo = $startInfo
-  $outWriter = [System.IO.File]::CreateText($stdoutFile)
-  $errWriter = [System.IO.File]::CreateText($stderrFile)
-
-  $proc.add_OutputDataReceived({
-    param($sender, $e)
-    if ($null -ne $e.Data) {
-      $outWriter.WriteLine($e.Data)
-      $outWriter.Flush()
-    }
-  })
-  $proc.add_ErrorDataReceived({
-    param($sender, $e)
-    if ($null -ne $e.Data) {
-      $errWriter.WriteLine($e.Data)
-      $errWriter.Flush()
-    }
-  })
-
-  [void]$proc.Start()
-  $proc.BeginOutputReadLine()
-  $proc.BeginErrorReadLine()
+  $argLine = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$CoreInstaller`"") + $Args
+  $proc = Start-Process -FilePath "powershell" `
+    -ArgumentList ($argLine -join " ") `
+    -RedirectStandardOutput $stdoutFile `
+    -RedirectStandardError $stderrFile `
+    -WindowStyle Hidden `
+    -PassThru
 
   $sw = [System.Diagnostics.Stopwatch]::StartNew()
   $printedOut = 0
@@ -192,8 +168,6 @@ function Run-StepProcess {
     }
   }
 
-  try { $outWriter.Close() } catch {}
-  try { $errWriter.Close() } catch {}
   try { Remove-Item -Force $stdoutFile -ErrorAction SilentlyContinue } catch {}
   try { Remove-Item -Force $stderrFile -ErrorAction SilentlyContinue } catch {}
   return $proc.ExitCode
