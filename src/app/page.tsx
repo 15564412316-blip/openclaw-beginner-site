@@ -2,22 +2,42 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function HomePage() {
+type Props = {
+  searchParams: Promise<{ v?: string }>;
+};
+
+export default async function HomePage({ searchParams }: Props) {
+  const params = await searchParams;
+  const variant = params.v === "b" ? "b" : "a";
+  const copy =
+    variant === "b"
+      ? {
+          title: "花 49.9，把 OpenClaw 真正装好并跑起来",
+          subtitle:
+            "我们不卖“看起来很厉害的一键脚本”，我们卖的是你能完成交付的安装路径。",
+          cta: "开通并开始闯关安装",
+        }
+      : {
+          title: "零基础也能装好 OpenClaw",
+          subtitle:
+            "我们不做原生 Windows 强行一键，而是用更稳定的 WSL2 + Ubuntu 路线，一步一步带你完成安装、配置和首次任务。",
+          cta: "立即开通（49.9 元）",
+        };
+
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-10">
         <section className="text-center">
           <p className="text-sm text-primary mb-2">OpenClaw Windows 稳定安装引导</p>
           <h1 className="text-3xl sm:text-5xl font-bold mb-4">
-            零基础也能装好 OpenClaw
+            {copy.title}
           </h1>
           <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
-            我们不做原生 Windows 强行一键，而是用更稳定的 WSL2 + Ubuntu 路线，
-            一步一步带你完成安装、配置和首次任务。
+            {copy.subtitle}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link href="/pricing">立即开通（49.9 元）</Link>
+              <Link href="/pricing">{copy.cta}</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href="/install">先看安装总览</Link>

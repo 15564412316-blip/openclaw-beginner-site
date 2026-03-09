@@ -28,6 +28,10 @@ export default function InstallOverviewPage() {
     () => INSTALL_STEPS.find((s) => !completed.includes(s.slug))?.slug ?? INSTALL_STEPS[0].slug,
     [completed]
   );
+  const nextIndex = useMemo(
+    () => INSTALL_STEPS.findIndex((s) => s.slug === nextStep),
+    [nextStep]
+  );
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -55,12 +59,22 @@ export default function InstallOverviewPage() {
                 <p className="text-sm text-muted-foreground mb-4">{step.goal}</p>
                 {completed.includes(step.slug) ? (
                   <p className="text-xs text-green-600 mb-3">已完成</p>
+                ) : idx === nextIndex ? (
+                  <p className="text-xs text-blue-600 mb-3">当前应做</p>
+                ) : idx > nextIndex ? (
+                  <p className="text-xs text-amber-600 mb-3">未解锁（请先完成前一步）</p>
                 ) : (
                   <p className="text-xs text-muted-foreground mb-3">未完成</p>
                 )}
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/install/${step.slug}`}>进入这一步</Link>
-                </Button>
+                {idx > nextIndex ? (
+                  <Button variant="outline" size="sm" disabled>
+                    先完成前一步
+                  </Button>
+                ) : (
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/install/${step.slug}`}>进入这一步</Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

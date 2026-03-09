@@ -9,6 +9,7 @@ export type InstallStep = {
   commands?: string[];
   successSignals: string[];
   commonIssues: { title: string; fix: string }[];
+  failScenarios?: { scene: string; action: string }[];
   nextSlug?: string;
 };
 
@@ -30,6 +31,10 @@ export const INSTALL_STEPS: InstallStep[] = [
       { title: "版本太低", fix: "先更新 Windows，再继续下一步。" },
       { title: "没有管理员权限", fix: "使用管理员账号登录或联系电脑管理员。" },
     ],
+    failScenarios: [
+      { scene: "看不到版本信息", action: "重启电脑后再次进入“设置 -> 系统 -> 关于”确认。" },
+      { scene: "不确定版本是否支持", action: "先截图版本号，对照步骤页最低要求。" },
+    ],
     nextSlug: "wsl2",
   },
   {
@@ -48,6 +53,10 @@ export const INSTALL_STEPS: InstallStep[] = [
     commonIssues: [
       { title: "命令无法识别", fix: "确认 PowerShell 是管理员模式，并更新系统后重试。" },
       { title: "安装卡住", fix: "检查网络；关闭 VPN/代理后重试一次。" },
+    ],
+    failScenarios: [
+      { scene: "命令执行后无变化", action: "确认是管理员 PowerShell，再执行一次命令。" },
+      { scene: "要求重启但你没重启", action: "先重启 Windows，再继续后续步骤。" },
     ],
     nextSlug: "ubuntu",
   },
@@ -68,6 +77,10 @@ export const INSTALL_STEPS: InstallStep[] = [
       { title: "Store 下载慢", fix: "换网络或稍后重试；保持网络稳定。" },
       { title: "启动闪退", fix: "先完成 WSL2 安装并重启 Windows 后再打开。" },
     ],
+    failScenarios: [
+      { scene: "Store 里搜不到 Ubuntu", action: "先更新 Microsoft Store 后重试搜索。" },
+      { scene: "下载中断", action: "切网络后重试，避免同时大量下载。" },
+    ],
     nextSlug: "ubuntu-init",
   },
   {
@@ -86,6 +99,10 @@ export const INSTALL_STEPS: InstallStep[] = [
       { title: "sudo 权限报错", fix: "确认你输入的是刚创建的 Ubuntu 密码。" },
       { title: "下载超时", fix: "检查网络，必要时切换镜像源后重试。" },
     ],
+    failScenarios: [
+      { scene: "输入密码看不到字符", action: "这是正常现象，直接输入后按回车。" },
+      { scene: "apt 命令报锁文件", action: "等待后台进程结束后再执行命令。" },
+    ],
     nextSlug: "linux-verify",
   },
   {
@@ -100,6 +117,10 @@ export const INSTALL_STEPS: InstallStep[] = [
     commonIssues: [
       { title: "node 不存在", fix: "先安装 Node.js LTS 后再继续。" },
       { title: "npm 报错", fix: "重新安装 Node，或修复 npm 缓存后重试。" },
+    ],
+    failScenarios: [
+      { scene: "版本命令返回 command not found", action: "先补装依赖，再执行一次验证命令。" },
+      { scene: "版本过低", action: "升级到 LTS 版本后继续。" },
     ],
     nextSlug: "openclaw",
   },
@@ -120,6 +141,10 @@ export const INSTALL_STEPS: InstallStep[] = [
       { title: "git clone 失败", fix: "优先检查网络；必要时使用镜像地址重试。" },
       { title: "npm install 失败", fix: "清理缓存后重试：npm cache clean --force。" },
     ],
+    failScenarios: [
+      { scene: "依赖安装很慢", action: "先等待，不要中途关闭终端；超时再重试。" },
+      { scene: "中途报权限问题", action: "确认当前目录权限，必要时新建目录重装。" },
+    ],
     nextSlug: "provider",
   },
   {
@@ -133,6 +158,10 @@ export const INSTALL_STEPS: InstallStep[] = [
     commonIssues: [
       { title: "Key 无效", fix: "检查是否复制完整，是否有空格或过期。" },
       { title: "余额不足", fix: "到服务商后台检查配额和账单。" },
+    ],
+    failScenarios: [
+      { scene: "配置后依旧报认证失败", action: "删除旧配置重新写入，避免隐藏空格。" },
+      { scene: "请求超时", action: "先确认服务商平台可用，再检查本地网络。" },
     ],
     nextSlug: "first-run",
   },
@@ -148,6 +177,10 @@ export const INSTALL_STEPS: InstallStep[] = [
       { title: "任务无响应", fix: "先回到上一步检查 API Key 和网络。" },
       { title: "结果质量差", fix: "调整提示词，指定更明确的目标和格式。" },
     ],
+    failScenarios: [
+      { scene: "有响应但结果为空", action: "缩小任务范围，先做一个更简单的任务。" },
+      { scene: "输出格式混乱", action: "在提示词里明确“按列表/表格输出”。" },
+    ],
     nextSlug: "aftercare",
   },
   {
@@ -161,6 +194,10 @@ export const INSTALL_STEPS: InstallStep[] = [
     commonIssues: [
       { title: "重启后找不到目录", fix: "在 Ubuntu 里使用 cd ~/openclaw 进入项目。" },
       { title: "命令忘了", fix: "到“后续启动说明”页复制标准命令。" },
+    ],
+    failScenarios: [
+      { scene: "隔几天后不记得怎么启动", action: "把启动命令保存到桌面文本或便签。" },
+      { scene: "再次运行报错", action: "先回到第 5 步重新做环境验证。" },
     ],
   },
 ];

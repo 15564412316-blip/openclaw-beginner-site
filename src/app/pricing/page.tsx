@@ -2,13 +2,24 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function PricingPage() {
+type Props = {
+  searchParams: Promise<{ v?: string }>;
+};
+
+export default async function PricingPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const variant = params.v === "b" ? "b" : "a";
+  const intro =
+    variant === "b"
+      ? "不是卖脚本，是卖成功安装结果。"
+      : "Windows 用户稳定安装引导（WSL2 + Ubuntu 路线）";
+
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-2 text-center">49.9 元 / 次</h1>
         <p className="text-muted-foreground text-center mb-8">
-          Windows 用户稳定安装引导（WSL2 + Ubuntu 路线）
+          {intro}
         </p>
 
         <Card className="border-primary/30 ring-1 ring-primary/20">

@@ -152,6 +152,22 @@ export function InstallStepTemplate({ step, index, total }: Props) {
           </CardContent>
         </Card>
 
+        {step.failScenarios && step.failScenarios.length > 0 ? (
+          <Card className="border-red-500/30 bg-red-500/5">
+            <CardContent className="p-6">
+              <h2 className="text-lg font-semibold mb-3">如果这一步失败，先这样处理</h2>
+              <div className="space-y-3 text-sm">
+                {step.failScenarios.map((i) => (
+                  <div key={i.scene}>
+                    <p className="font-medium">{i.scene}</p>
+                    <p className="text-muted-foreground">{i.action}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link href="/install">返回总览</Link>
