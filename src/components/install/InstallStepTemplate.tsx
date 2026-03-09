@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { InstallStep } from "@/lib/installSteps";
@@ -9,7 +12,42 @@ type Props = {
   total: number;
 };
 
+const STORAGE_KEY = "oc_install_completed_steps_v1";
+
 export function InstallStepTemplate({ step, index, total }: Props) {
+  const [checkedActions, setCheckedActions] = useState<Record<string, boolean>>({});
+  const [copiedCommand, setCopiedCommand] = useState<string>("");
+  const [detectionPassed, setDetectionPassed] = useState(false);
+  const allChecked = useMemo(
+    () => step.actions.every((a) => checkedActions[a]),
+    [checkedActions, step.actions]
+  );
+
+  const toggleAction = (action: string) => {
+    setCheckedActions((prev) => ({ ...prev, [action]: !prev[action] }));
+  };
+
+  const copyCmd = async (cmd: string) => {
+    try {
+      await navigator.clipboard.writeText(cmd);
+      setCopiedCommand(cmd);
+      setTimeout(() => setCopiedCommand(""), 1500);
+    } catch {
+      setCopiedCommand("");
+    }
+  };
+
+  const markDone = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const list = raw ? (JSON.parse(raw) as string[]) : [];
+      const next = Array.from(new Set([...list, step.slug]));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // ignore local cache failure
+    }
+  };
+
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-5">
@@ -37,7 +75,15 @@ export function InstallStepTemplate({ step, index, total }: Props) {
             <h2 className="text-lg font-semibold mb-3">你需要做的操作</h2>
             <div className="space-y-2 text-sm text-muted-foreground">
               {step.actions.map((a) => (
-                <p key={a}>• {a}</p>
+                <label key={a} className="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={Boolean(checkedActions[a])}
+                    onChange={() => toggleAction(a)}
+                  />
+                  <span>{a}</span>
+                </label>
               ))}
             </div>
             {step.pathHint ? (
@@ -55,13 +101,31 @@ export function InstallStepTemplate({ step, index, total }: Props) {
               <div className="space-y-2">
                 {step.commands.map((cmd) => (
                   <div key={cmd} className="rounded-md border p-3 bg-muted/30">
-                    <code className="text-sm break-all">{cmd}</code>
+                    <code className="text-sm break-all block mb-2">{cmd}</code>
+                    <Button size="sm" variant="outline" onClick={() => copyCmd(cmd)}>
+                      {copiedCommand === cmd ? "已复制" : "复制命令"}
+                    </Button>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
         ) : null}
+
+        <Card className="border-blue-500/30 bg-blue-500/5">
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold mb-3">检测区</h2>
+            <p className="text-sm text-muted-foreground mb-3">
+              完成上面的操作后，点击下面按钮进行自检确认。
+            </p>
+            <Button
+              variant={detectionPassed ? "default" : "outline"}
+              onClick={() => setDetectionPassed((v) => !v)}
+            >
+              {detectionPassed ? "已确认：本步通过" : "点击确认：我已看到成功标志"}
+            </Button>
+          </CardContent>
+        </Card>
 
         <Card className="border-green-500/30 bg-green-500/5">
           <CardContent className="p-6">
@@ -91,6 +155,9 @@ export function InstallStepTemplate({ step, index, total }: Props) {
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link href="/install">返回总览</Link>
+          </Button>
+          <Button onClick={markDone} disabled={!allChecked || !detectionPassed} variant="outline">
+            标记本步已完成
           </Button>
           {step.nextSlug ? (
             <Button asChild>

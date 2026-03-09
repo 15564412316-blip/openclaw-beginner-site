@@ -6,135 +6,29 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
-      <div className="container px-4 py-12 mx-auto">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          {/* 品牌信息 */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-bold">OpenClaw 新手指南</h3>
-            <p className="text-sm text-muted-foreground">
-              帮助零基础用户快速上手 OpenClaw/skills 的互动式学习平台
-            </p>
+      <div className="container px-4 py-8 mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <p className="font-semibold">OpenClaw 稳定安装引导</p>
+            <p className="text-sm text-muted-foreground">49.9 元 / 次，目标是让你真正装好并跑通。</p>
           </div>
-
-          {/* 快速链接 */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold">快速开始</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/guide"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  安装指南
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/guide/config"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  配置说明
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/guide/first-use"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  首次使用
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* 帮助支持 */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold">帮助支持</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/faq"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  常见问题
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  联系我们
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/legal/refund"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  退款说明
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* 相关链接 */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold">相关与协议</h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="https://github.com/openclaw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://openclaw.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  OpenClaw 官网
-                </a>
-              </li>
-              <li>
-                <Link
-                  href="/legal/terms"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  用户协议
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/legal/privacy"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  隐私政策
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/legal/service"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  服务边界
-                </Link>
-              </li>
-            </ul>
+          <div className="flex flex-wrap gap-4 text-sm">
+            <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+              开通服务
+            </Link>
+            <Link href="/install" className="text-muted-foreground hover:text-foreground transition-colors">
+              安装向导
+            </Link>
+            <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+              常见问题
+            </Link>
+            <Link href="/support" className="text-muted-foreground hover:text-foreground transition-colors">
+              联系支持
+            </Link>
           </div>
         </div>
-
-        {/* 版权信息 */}
-        <div className="mt-8 pt-8 border-t text-center">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} OpenClaw. 保留所有权利。
-          </p>
+        <div className="mt-6 pt-6 border-t text-sm text-muted-foreground">
+          © {new Date().getFullYear()} OpenClaw. 保留所有权利。
         </div>
       </div>
     </footer>
